@@ -1,6 +1,6 @@
 import { Circle, Group, Image, Text } from "react-konva";
 import { useHover } from "../../hooks/useHover";
-import { HOVER_STROKE } from "../../styles/style_consts";
+import { HOVER_STROKE, SELECTED_STROKE } from "../../styles/style_consts";
 import useImage from "use-image";
 
 const DEFAULT_ASPECT = 1
@@ -12,14 +12,16 @@ interface TokenProps {
     y: number;
     imageSrc?: string;
     text?: string;
+    selected?: boolean;
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export function Token({ id, x, y, imageSrc, text = "Token", onDragEnd }: TokenProps) {
+export function Token({ id, x, y, imageSrc, text = "Token", selected, onDragEnd }: TokenProps) {
     const { hovered, hoverProps } = useHover();
     const [image] = useImage(imageSrc ?? "");
 
     return <Group
+        id={id}
         name="token"
         x={x}
         y={y}
@@ -32,9 +34,7 @@ export function Token({ id, x, y, imageSrc, text = "Token", onDragEnd }: TokenPr
         <Circle
             width={DEFAULT_SIZE}
             height={DEFAULT_SIZE * DEFAULT_ASPECT}
-            fill="brown"
             shadowBlur={10}
-            {...(hovered ? HOVER_STROKE : {})}
         />
         <Image
             image={image}
@@ -42,6 +42,12 @@ export function Token({ id, x, y, imageSrc, text = "Token", onDragEnd }: TokenPr
             y={-(DEFAULT_SIZE * DEFAULT_ASPECT) / 2}
             width={DEFAULT_SIZE}
             height={DEFAULT_SIZE * DEFAULT_ASPECT}
+        />
+        <Circle
+            width={DEFAULT_SIZE}
+            height={DEFAULT_SIZE * DEFAULT_ASPECT}
+            listening={false}
+            {...(selected ? SELECTED_STROKE : hovered ? HOVER_STROKE : {})}
         />
         <Text
             x={-DEFAULT_SIZE / 2}

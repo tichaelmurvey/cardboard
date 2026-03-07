@@ -1,6 +1,6 @@
 import { Group, Rect, Text } from "react-konva";
 import { useHover } from "../../hooks/useHover";
-import { HOVER_STROKE } from "../../styles/style_consts";
+import { HOVER_STROKE, SELECTED_STROKE } from "../../styles/style_consts";
 
 const DEFAULT_ASPECT = 1.5
 const DEFAULT_SIZE = 100
@@ -10,13 +10,15 @@ interface CardProps {
     x: number;
     y: number;
     text?: string;
+    selected?: boolean;
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export function Card({ id, x, y, text = "Card", onDragEnd }: CardProps) {
+export function Card({ id, x, y, text = "Card", selected, onDragEnd }: CardProps) {
     const { hovered, hoverProps } = useHover();
 
     return <Group
+        id={id}
         name="card"
         x={x}
         y={y}
@@ -29,9 +31,9 @@ export function Card({ id, x, y, text = "Card", onDragEnd }: CardProps) {
         <Rect
             width={DEFAULT_SIZE}
             height={DEFAULT_SIZE * DEFAULT_ASPECT}
-            fill="brown"
+            fill={"brown"}
             shadowBlur={10}
-            {...(hovered ? HOVER_STROKE : {})}
+            {...(selected ? SELECTED_STROKE : hovered ? HOVER_STROKE : {})}
         />
         <Text
             width={DEFAULT_SIZE}

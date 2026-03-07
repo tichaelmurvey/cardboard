@@ -1,6 +1,6 @@
 import { Group, Rect, Image } from "react-konva";
 import { useHover } from "../../hooks/useHover";
-import { HOVER_STROKE } from "../../styles/style_consts";
+import { HOVER_STROKE, SELECTED_STROKE } from "../../styles/style_consts";
 import useImage from "use-image";
 
 const DEFAULT_SIZE = 800;
@@ -10,10 +10,11 @@ interface BoardProps {
     x: number;
     y: number;
     src: string;
+    selected?: boolean;
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export function Board({ id, x, y, src, onDragEnd }: BoardProps) {
+export function Board({ id, x, y, src, selected, onDragEnd }: BoardProps) {
     const { hovered, hoverProps } = useHover();
     const [image] = useImage(src);
 
@@ -22,6 +23,7 @@ export function Board({ id, x, y, src, onDragEnd }: BoardProps) {
     const height = DEFAULT_SIZE * aspect;
 
     return <Group
+        id={id}
         name="board"
         x={x}
         y={y}
@@ -34,14 +36,18 @@ export function Board({ id, x, y, src, onDragEnd }: BoardProps) {
         <Rect
             width={width}
             height={height}
-            fill="brown"
             shadowBlur={10}
-            {...(hovered ? HOVER_STROKE : {})}
         />
         <Image
             image={image}
             width={width}
             height={height}
+        />
+        <Rect
+            width={width}
+            height={height}
+            listening={false}
+            {...(selected ? SELECTED_STROKE : hovered ? HOVER_STROKE : {})}
         />
     </Group>;
 }
