@@ -11,11 +11,13 @@ interface BoardProps {
     y: number;
     src: string;
     selected?: boolean;
+    hovered?: boolean;
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export function Board({ id, x, y, src, selected, onDragEnd }: BoardProps) {
-    const { hovered, hoverProps } = useHover();
+export function Board({ id, x, y, src, selected, hovered: hoveredOverride, onDragEnd }: BoardProps) {
+    const { hovered: internalHovered, hoverProps } = useHover();
+    const hovered = hoveredOverride ?? internalHovered;
     const [image] = useImage(src);
 
     const aspect = image ? image.height / image.width : 1;

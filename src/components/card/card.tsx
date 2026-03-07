@@ -11,11 +11,13 @@ interface CardProps {
     y: number;
     text?: string;
     selected?: boolean;
+    hovered?: boolean;
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export function Card({ id, x, y, text = "Card", selected, onDragEnd }: CardProps) {
-    const { hovered, hoverProps } = useHover();
+export function Card({ id, x, y, text = "Card", selected, hovered: hoveredOverride, onDragEnd }: CardProps) {
+    const { hovered: internalHovered, hoverProps } = useHover();
+    const hovered = hoveredOverride ?? internalHovered;
 
     return <Group
         id={id}
