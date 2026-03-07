@@ -12,10 +12,11 @@ interface CardProps {
     text?: string;
     selected?: boolean;
     hovered?: boolean;
+    scale?: number;
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export function Card({ id, x, y, text = "Card", selected, hovered: hoveredOverride, onDragEnd }: CardProps) {
+export function Card({ id, x, y, text = "Card", selected, hovered: hoveredOverride, scale = 1, onDragEnd }: CardProps) {
     const { hovered: internalHovered, hoverProps } = useHover();
     const hovered = hoveredOverride ?? internalHovered;
 
@@ -24,6 +25,8 @@ export function Card({ id, x, y, text = "Card", selected, hovered: hoveredOverri
         name="card"
         x={x}
         y={y}
+        scaleX={scale}
+        scaleY={scale}
         draggable
         {...hoverProps}
         onDragEnd={(e) => {

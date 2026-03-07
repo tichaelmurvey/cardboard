@@ -14,10 +14,11 @@ interface TokenProps {
     text?: string;
     selected?: boolean;
     hovered?: boolean;
+    scale?: number;
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export function Token({ id, x, y, imageSrc, text = "Token", selected, hovered: hoveredOverride, onDragEnd }: TokenProps) {
+export function Token({ id, x, y, imageSrc, text = "Token", selected, hovered: hoveredOverride, scale = 1, onDragEnd }: TokenProps) {
     const { hovered: internalHovered, hoverProps } = useHover();
     const hovered = hoveredOverride ?? internalHovered;
     const [image] = useImage(imageSrc ?? "");
@@ -27,6 +28,8 @@ export function Token({ id, x, y, imageSrc, text = "Token", selected, hovered: h
         name="token"
         x={x}
         y={y}
+        scaleX={scale}
+        scaleY={scale}
         draggable
         {...hoverProps}
         onDragEnd={(e) => {

@@ -23,6 +23,7 @@ export default function App() {
     const isSelecting = useRef(false);
     const dragStartPos = useRef<Map<string, { x: number; y: number }>>(new Map());
     const [hoveredId, setHoveredId] = useState<string | null>(null);
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; instanceId: string } | null>(null);
     const [stageScale, setStageScale] = useState(1);
     const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
     const isPanning = useRef(false);
@@ -34,6 +35,20 @@ export default function App() {
         for (const p of state.prototypes) map.set(p.id, p);
         return map;
     }, [state.prototypes]);
+
+    function isLocked(id: string): boolean {
+        const inst = state.instances.find(i => i.id === id);
+        return !!(inst?.props?.locked);
+    }
+
+    function toggleLock(id: string) {
+        setState(prev => ({
+            ...prev,
+            instances: prev.instances.map(inst =>
+                inst.id === id ? { ...inst, props: { ...inst.props, locked: !inst.props?.locked } } : inst
+            ),
+        }));
+    }
 
     function deleteInstances(ids: Set<string>) {
         if (ids.size === 0) return;
@@ -48,11 +63,27 @@ export default function App() {
         });
     }
 
+    function getFocusedIds(): Set<string> {
+        const ids = new Set(selectedIds);
+        if (marqueeHitIds) for (const id of marqueeHitIds) ids.add(id);
+        if (hoveredId) ids.add(hoveredId);
+        return ids;
+    }
+
+    function scaleInstances(ids: Set<string>, factor: number) {
+        if (ids.size === 0) return;
+        setState(prev => ({
+            ...prev,
+            instances: prev.instances.map(inst => {
+                if (!ids.has(inst.id)) return inst;
+                const current = (inst.props?.scale as number) ?? 1;
+                return { ...inst, props: { ...inst.props, scale: current * factor } };
+            }),
+        }));
+    }
+
     function deleteSelected() {
-        const toDelete = new Set(selectedIds);
-        if (marqueeHitIds) for (const id of marqueeHitIds) toDelete.add(id);
-        if (hoveredId) toDelete.add(hoveredId);
-        deleteInstances(toDelete);
+        deleteInstances(getFocusedIds());
     }
 
     const ZOOM_FACTOR = 1.1;
@@ -89,13 +120,22 @@ export default function App() {
         };
     }
 
-    // Keyboard pan loop — runs entirely via refs so it's stable across renders
+    // Continuous keyboard actions (pan + scale/zoom) — stable effect with rAF loop
     const heldKeys = useRef<Set<string>>(new Set());
-    const panAnimRef = useRef<number>(0);
-    const PAN_KEYS = useMemo(() => new Set(['w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']), []);
+    const animRef = useRef<number>(0);
+    const HELD_KEYS_SET = useMemo(() => new Set([
+        'w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+        '+', '=', '-', '_',
+    ]), []);
+    const stateRef = useRef({ stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId, state });
+    useEffect(() => {
+        stateRef.current = { stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId, state };
+    });
 
     useEffect(() => {
-        function panTick() {
+        const SCALE_SPEED = 1.02;
+
+        function tick() {
             const keys = heldKeys.current;
             let dx = 0, dy = 0;
             if (keys.has('w') || keys.has('ArrowUp')) dy += PAN_SPEED;
@@ -105,35 +145,62 @@ export default function App() {
             if (dx !== 0 || dy !== 0) {
                 setStagePos(p => ({ x: p.x + dx, y: p.y + dy }));
             }
-            panAnimRef.current = requestAnimationFrame(panTick);
+
+            const scaleUp = keys.has('+') || keys.has('=');
+            const scaleDown = keys.has('-') || keys.has('_');
+            if (scaleUp || scaleDown) {
+                const factor = scaleUp ? SCALE_SPEED : 1 / SCALE_SPEED;
+                const { selectedIds: sel, marqueeHitIds: mh, hoveredId: hov } = stateRef.current;
+                const focused = new Set(sel);
+                if (mh) for (const id of mh) focused.add(id);
+                if (hov) focused.add(hov);
+
+                if (focused.size > 0) {
+                    scaleInstances(focused, factor);
+                } else {
+                    setStageScale(prev => {
+                        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, prev * factor));
+                        const cx = window.innerWidth / 2;
+                        const cy = window.innerHeight / 2;
+                        setStagePos(p => {
+                            const mx = (cx - p.x) / prev;
+                            const my = (cy - p.y) / prev;
+                            return { x: cx - mx * newScale, y: cy - my * newScale };
+                        });
+                        return newScale;
+                    });
+                }
+            }
+
+            animRef.current = requestAnimationFrame(tick);
         }
 
-        function startPanLoop() {
-            if (!panAnimRef.current) {
-                panAnimRef.current = requestAnimationFrame(panTick);
+        function startLoop() {
+            if (!animRef.current) {
+                animRef.current = requestAnimationFrame(tick);
             }
         }
 
-        function stopPanLoop() {
-            if (panAnimRef.current) {
-                cancelAnimationFrame(panAnimRef.current);
-                panAnimRef.current = 0;
+        function stopLoop() {
+            if (animRef.current) {
+                cancelAnimationFrame(animRef.current);
+                animRef.current = 0;
             }
         }
 
         function handleKeyDown(e: KeyboardEvent) {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-            if (PAN_KEYS.has(e.key)) {
+            if (HELD_KEYS_SET.has(e.key)) {
                 e.preventDefault();
                 heldKeys.current.add(e.key);
-                startPanLoop();
+                startLoop();
             }
         }
 
         function handleKeyUp(e: KeyboardEvent) {
             heldKeys.current.delete(e.key);
-            if (![...heldKeys.current].some(k => PAN_KEYS.has(k))) {
-                stopPanLoop();
+            if (![...heldKeys.current].some(k => HELD_KEYS_SET.has(k))) {
+                stopLoop();
             }
         }
 
@@ -142,31 +209,17 @@ export default function App() {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
-            stopPanLoop();
+            stopLoop();
         };
-    }, [PAN_KEYS]);
+    }, [HELD_KEYS_SET]);
 
-    // Non-pan keyboard shortcuts (delete, zoom)
+    // One-shot keyboard shortcuts (delete)
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
-            switch (e.key) {
-                case 'Delete':
-                case 'Backspace':
-                    e.preventDefault();
-                    deleteSelected();
-                    break;
-                case '+':
-                case '=':
-                    e.preventDefault();
-                    zoomAtPoint(stageScale * ZOOM_FACTOR, window.innerWidth / 2, window.innerHeight / 2);
-                    break;
-                case '-':
-                case '_':
-                    e.preventDefault();
-                    zoomAtPoint(stageScale / ZOOM_FACTOR, window.innerWidth / 2, window.innerHeight / 2);
-                    break;
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                e.preventDefault();
+                deleteSelected();
             }
         }
         window.addEventListener('keydown', handleKeyDown);
@@ -215,7 +268,15 @@ export default function App() {
     });
 
     function handleDragStart(e: KonvaEventObject<DragEvent>) {
+        if (isPanning.current) {
+            e.target.stopDrag();
+            return;
+        }
         const draggedId = e.target.id();
+        if (isLocked(draggedId)) {
+            e.target.stopDrag();
+            return;
+        }
         e.target.moveToTop();
         e.target.opacity(0.7);
 
@@ -301,7 +362,7 @@ export default function App() {
         const hits = new Set<string>();
         for (const child of layerRef.current.getChildren()) {
             const id = child.id();
-            if (!id) continue;
+            if (!id || isLocked(id)) continue;
             const cr = child.getClientRect();
             if (
                 cr.x < boxRect.x + boxRect.width &&
@@ -377,6 +438,18 @@ export default function App() {
         setMarqueeHitIds(null);
     }
 
+    // Close context menu on any click or scroll
+    useEffect(() => {
+        if (!contextMenu) return;
+        const close = () => setContextMenu(null);
+        window.addEventListener('mousedown', close);
+        window.addEventListener('wheel', close);
+        return () => {
+            window.removeEventListener('mousedown', close);
+            window.removeEventListener('wheel', close);
+        };
+    }, [contextMenu]);
+
     async function handleLoad() {
         try {
             const loaded = await uploadJson();
@@ -388,7 +461,15 @@ export default function App() {
 
     return (
         <>
-            <Drawer position='right' opened={opened} onClose={close} title="Cardboard" trapFocus={false} closeOnClickOutside={false} withOverlay={false}>
+            <Drawer position='right' opened={opened} onClose={close} trapFocus={false} closeOnClickOutside={false} withOverlay={false}>
+                <h2 style={{
+                    fontFamily: 'Sheandy',
+                    fontWeight: 'normal',
+                    margin: 0,
+                    textAlign: "center",
+                    fontSize: "5rem",
+                    color: "sienna"
+                }}>Cardboard</h2>
                 <Stack>
                     <Button onClick={() => downloadJson(state)}>Save</Button>
                     <Button onClick={handleLoad}>Load</Button>
@@ -419,7 +500,7 @@ export default function App() {
             >
                 {opened ? 'Close' : 'Menu'}
             </Button>
-            <div style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ position: 'absolute', inset: 0 }} onContextMenu={e => e.preventDefault()}>
                 <Stage ref={stageRef} width={window.innerWidth} height={window.innerHeight}
                     scaleX={stageScale} scaleY={stageScale}
                     x={stagePos.x} y={stagePos.y}
@@ -427,18 +508,28 @@ export default function App() {
                     onMouseDown={handleStageMouseDown}
                     onMouseMove={handleStageMouseMove}
                     onMouseUp={handleStageMouseUp}
+                    onContextMenu={(e) => {
+                        e.evt.preventDefault();
+                        const group = e.target.findAncestor('Group') ?? e.target;
+                        const id = group.id();
+                        if (id) {
+                            setContextMenu({ x: e.evt.clientX, y: e.evt.clientY, instanceId: id });
+                        } else {
+                            setContextMenu(null);
+                        }
+                    }}
                 >
                     <Layer ref={layerRef} onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}
                         onMouseEnter={(e) => {
                             const group = e.target.findAncestor('Group') ?? e.target;
                             const id = group.id();
-                            if (id) setHoveredId(id);
+                            if (id && !isLocked(id)) setHoveredId(id);
                         }}
                         onMouseLeave={() => setHoveredId(null)}
                         onClick={(e) => {
                             const group = e.target.findAncestor('Group') ?? e.target;
                             const id = group.id();
-                            if (!id) return;
+                            if (!id || isLocked(id)) return;
                             const evt = e.evt as MouseEvent;
                             if (evt.shiftKey) {
                                 setSelectedIds(prev => {
@@ -454,8 +545,9 @@ export default function App() {
                         {state.instances.map(inst => {
                             const proto = prototypeMap.get(inst.prototypeId);
                             if (!proto) return null;
-                            const hovered = marqueeHitIds ? marqueeHitIds.has(inst.id) : undefined;
-                            return renderInstance(inst, proto, updatePosition, selectedIds.has(inst.id), hovered);
+                            const locked = !!(inst.props?.locked);
+                            const hovered = locked ? false : marqueeHitIds ? marqueeHitIds.has(inst.id) : undefined;
+                            return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), hovered);
                         })}
                     </Layer>
                     {selBox && (
@@ -474,6 +566,52 @@ export default function App() {
                     )}
                 </Stage>
             </div>
+            {contextMenu && (
+                <div
+                    onMouseDown={e => e.stopPropagation()}
+                    style={{
+                        position: 'absolute',
+                        left: contextMenu.x,
+                        top: contextMenu.y,
+                        zIndex: 2000,
+                        background: '#f3b963',
+                        color: '#130101',
+                        border: '2px double #ffe600',
+                        borderRadius: 6,
+                        padding: 4,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                    }}
+                >
+                    {[
+                        { label: isLocked(contextMenu.instanceId) ? 'Unlock' : 'Lock', action: () => toggleLock(contextMenu.instanceId) },
+                        { label: 'Grow', action: () => scaleInstances(new Set([contextMenu.instanceId]), 1.2) },
+                        { label: 'Shrink', action: () => scaleInstances(new Set([contextMenu.instanceId]), 1 / 1.2) },
+                        { label: 'Delete', action: () => { deleteInstances(new Set([contextMenu.instanceId])); setContextMenu(null); } },
+                    ].map(item => (
+                        <button
+                            key={item.label}
+                            onClick={item.action}
+                            style={{
+                                padding: '4px 12px',
+                                background: 'transparent',
+                                border: 'none',
+                                color: '#130101',
+                                cursor: 'pointer',
+                                textAlign: 'left',
+                                fontSize: 13,
+                                borderRadius: 4,
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = '#e0a040')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+            )}
         </>
     );
 }
@@ -486,14 +624,15 @@ function renderInstance(
     hovered?: boolean,
 ) {
     const props = resolveProps(prototype, instance);
+    const scale = (props.scale as number) ?? 1;
 
     switch (prototype.type) {
         case "board":
-            return <Board key={instance.id} id={instance.id} x={instance.x} y={instance.y} src={props.src as string} onDragEnd={onDragEnd} selected={selected} hovered={hovered} />;
+            return <Board key={instance.id} id={instance.id} x={instance.x} y={instance.y} src={props.src as string} scale={scale} onDragEnd={onDragEnd} selected={selected} hovered={hovered} />;
         case "card":
-            return <Card key={instance.id} id={instance.id} x={instance.x} y={instance.y} text={props.text as string | undefined} onDragEnd={onDragEnd} selected={selected} hovered={hovered} />;
+            return <Card key={instance.id} id={instance.id} x={instance.x} y={instance.y} text={props.text as string | undefined} scale={scale} onDragEnd={onDragEnd} selected={selected} hovered={hovered} />;
         case "token":
-            return <Token key={instance.id} id={instance.id} x={instance.x} y={instance.y} imageSrc={props.imageSrc as string | undefined} text={props.text as string | undefined} onDragEnd={onDragEnd} selected={selected} hovered={hovered} />;
+            return <Token key={instance.id} id={instance.id} x={instance.x} y={instance.y} imageSrc={props.imageSrc as string | undefined} text={props.text as string | undefined} scale={scale} onDragEnd={onDragEnd} selected={selected} hovered={hovered} />;
     }
 }
 

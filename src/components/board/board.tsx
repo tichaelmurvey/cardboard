@@ -12,10 +12,11 @@ interface BoardProps {
     src: string;
     selected?: boolean;
     hovered?: boolean;
+    scale?: number;
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export function Board({ id, x, y, src, selected, hovered: hoveredOverride, onDragEnd }: BoardProps) {
+export function Board({ id, x, y, src, selected, hovered: hoveredOverride, scale = 1, onDragEnd }: BoardProps) {
     const { hovered: internalHovered, hoverProps } = useHover();
     const hovered = hoveredOverride ?? internalHovered;
     const [image] = useImage(src);
@@ -29,6 +30,8 @@ export function Board({ id, x, y, src, selected, hovered: hoveredOverride, onDra
         name="board"
         x={x}
         y={y}
+        scaleX={scale}
+        scaleY={scale}
         draggable
         {...hoverProps}
         onDragEnd={(e) => {
