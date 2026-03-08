@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-
-const SERVER_URL = 'http://localhost:3003';
+import { SERVER_URL } from './config';
 
 export function useRoom(): string | null {
     const [roomCode, setRoomCode] = useState<string | null>(() => {

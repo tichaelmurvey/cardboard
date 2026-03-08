@@ -2,8 +2,8 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import type { CanvasState } from '../state_management/types';
 import { getClientId } from './clientId';
+import { SERVER_URL } from './config';
 
-const SERVER_URL = 'http://localhost:3003';
 const THROTTLE_MS = 50;
 
 export function useMultiplayer(
