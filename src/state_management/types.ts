@@ -1,6 +1,6 @@
 export type ObjectId = string;
 
-export type ObjectType = "card" | "token" | "board";
+export type ObjectType = "card" | "token" | "board" | "deck";
 
 export interface Prototype {
     id: ObjectId;
