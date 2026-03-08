@@ -26,6 +26,7 @@ jobs:
         env:
           VITE_BASE: /cardboard/
           VITE_SERVER_URL: https://cardboard-imm1.onrender.com
+      - run: cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
