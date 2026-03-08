@@ -20,4 +20,10 @@ export const DEFAULT_STATE: CanvasState = {
         { id: crypto.randomUUID(), prototypeId: cardId, x: 0, y: 0 },
         { id: crypto.randomUUID(), prototypeId: tokenId, x: 0, y: 0 },
     ],
+    players: [
+        { id: crypto.randomUUID(), color: '#e03131', name: 'Red' },
+        { id: crypto.randomUUID(), color: '#1971c2', name: 'Blue' },
+        { id: crypto.randomUUID(), color: '#2f9e44', name: 'Green' },
+        { id: crypto.randomUUID(), color: '#f08c00', name: 'Yellow' },
+    ],
 };

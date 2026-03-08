@@ -16,10 +16,18 @@ export interface Instance {
     props?: Record<string, unknown>;
 }
 
+export interface Player {
+    id: ObjectId;
+    color: string;
+    name: string;
+    claimedBy?: string;
+}
+
 export interface CanvasState {
     version: 1;
     prototypes: Prototype[];
     instances: Instance[];
+    players: Player[];
 }
 
 /** Resolve an instance's effective props by merging prototype defaults with instance overrides. */

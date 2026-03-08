@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: cardboard-server
+    runtime: node
+    buildCommand: npm install && npm run server:build
+    startCommand: npm run server:start
+    envVars:
+      - key: NODE_ENV
+        value: production
