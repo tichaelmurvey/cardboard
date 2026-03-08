@@ -24,6 +24,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
+          VITE_BASE: /cardboard/
           VITE_SERVER_URL: https://cardboard-imm1.onrender.com
       - uses: actions/upload-pages-artifact@v3
         with:
