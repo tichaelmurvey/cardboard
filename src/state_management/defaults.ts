@@ -26,4 +26,5 @@ export const DEFAULT_STATE: CanvasState = {
         { id: crypto.randomUUID(), color: '#2f9e44', name: 'Green' },
         { id: crypto.randomUUID(), color: '#f08c00', name: 'Yellow' },
     ],
+    hiddenRegions: [],
 };

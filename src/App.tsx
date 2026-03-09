@@ -7,6 +7,7 @@ import Konva from 'konva';
 import { DEFAULT_STATE } from './state_management/defaults';
 import { downloadJson, uploadJson } from './state_management/persistence';
 import type { CanvasState, Instance, Prototype } from './state_management/types';
+import { resolveProps } from './state_management/types';
 import { rectsOverlap50, rectsIntersect } from './utils/geometry';
 import type { Rect2D } from './utils/geometry';
 import { renderInstance, getZOrder, getGroupId } from './canvas/renderInstance';
@@ -20,6 +21,8 @@ import type { InstDraft } from './components/editor/InstEditorModal';
 import { useMultiplayer } from './multiplayer/useMultiplayer';
 import { useRoom } from './multiplayer/useRoom';
 import { JoinModal } from './components/editor/JoinModal';
+import { NewProtoModal } from './components/editor/NewProtoModal';
+import { HiddenRegion } from './components/hidden-region/HiddenRegion';
 
 export default function App() {
     const roomCode = useRoom();
@@ -47,6 +50,8 @@ export default function App() {
     const canvasRef = useRef<HTMLDivElement>(null);
     const [clipboard, setClipboard] = useState<Instance[]>([]);
     const [targetedId, setTargetedId] = useState<string | null>(null);
+    const [newProtoOpen, setNewProtoOpen] = useState(false);
+    const [editMode, setEditMode] = useState(true);
 
     const prototypeMap = useMemo(() => {
         const map = new Map<string, Prototype>();
@@ -299,7 +304,7 @@ export default function App() {
 
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
-            if (e.key === 'Delete' || e.key === 'Backspace') {
+            if ((e.key === 'Delete' || e.key === 'Backspace') && editMode) {
                 e.preventDefault();
                 deleteInstances(getFocusedIds());
             }
@@ -312,7 +317,7 @@ export default function App() {
                 e.preventDefault();
                 drawFromDeck();
             }
-            if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+            if (e.key === 'v' && (e.ctrlKey || e.metaKey) && editMode) {
                 const pointer = stageRef.current?.getPointerPosition();
                 const { stageScale: sc, stagePos: sp } = stateRef.current;
                 const mouse = pointer
@@ -615,7 +620,15 @@ export default function App() {
 
     function getContextMenuItems(): ContextMenuItem[] {
         if (!contextMenu) return [];
+        if (!editMode) return [];
         const instId = contextMenu.instanceId;
+        // Check if it's a hidden region
+        const isRegion = instId && (state.hiddenRegions ?? []).some(r => r.id === instId);
+        if (instId && isRegion) {
+            return [
+                { label: 'Delete Region', action: () => { deleteRegion(instId); setContextMenu(null); } },
+            ];
+        }
         if (instId) {
             return [
                 { label: isLocked(instId) ? 'Unlock' : 'Lock', action: () => toggleLock(instId) },
@@ -630,6 +643,23 @@ export default function App() {
                 { label: 'Edit Prototype', action: () => {
                     const inst = state.instances.find(i => i.id === instId);
                     if (inst) openProtoEditor(inst.prototypeId);
+                    setContextMenu(null);
+                }},
+                { label: 'Make Prototype', action: () => {
+                    const inst = state.instances.find(i => i.id === instId);
+                    if (!inst) return;
+                    const proto = prototypeMap.get(inst.prototypeId);
+                    if (!proto) return;
+                    const newProtoId = crypto.randomUUID();
+                    const merged = resolveProps(proto, inst);
+                    const { locked, ...protoProps } = merged as Record<string, unknown> & { locked?: unknown };
+                    setState(prev => ({
+                        ...prev,
+                        prototypes: [...prev.prototypes, { id: newProtoId, type: proto.type, props: protoProps }],
+                        instances: prev.instances.map(i =>
+                            i.id === instId ? { ...i, prototypeId: newProtoId, props: undefined } : i
+                        ),
+                    }));
                     setContextMenu(null);
                 }},
                 { label: 'Delete', action: () => { deleteInstances(new Set([instId])); setContextMenu(null); } },
@@ -733,12 +763,107 @@ export default function App() {
         }));
     }
 
+    function createPrototype(type: import('./state_management/types').ObjectType, text: string, scale: number, imageSrc: string) {
+        const props: Record<string, unknown> = { text };
+        if (scale !== 1) props.scale = scale;
+        if (imageSrc) props.src = imageSrc;
+        setState(prev => ({
+            ...prev,
+            prototypes: [...prev.prototypes, { id: crypto.randomUUID(), type, props }],
+        }));
+    }
+
+    function deletePrototype(id: string) {
+        setState(prev => ({
+            ...prev,
+            prototypes: prev.prototypes.filter(p => p.id !== id),
+            instances: prev.instances.filter(i => i.prototypeId !== id),
+        }));
+    }
+
     function deletePlayer(id: string) {
         setState(prev => ({
             ...prev,
             players: prev.players.filter(p => p.id !== id),
         }));
     }
+
+    // --- Hidden Regions ---
+
+    function addHiddenRegion(playerId: string) {
+        const region = {
+            id: crypto.randomUUID(),
+            playerId,
+            x: -stagePos.x / stageScale + 100,
+            y: -stagePos.y / stageScale + 100,
+            width: 200,
+            height: 200,
+        };
+        setState(prev => ({
+            ...prev,
+            hiddenRegions: [...(prev.hiddenRegions ?? []), region],
+        }));
+    }
+
+    function updateRegionPosition(id: string, x: number, y: number) {
+        setState(prev => ({
+            ...prev,
+            hiddenRegions: (prev.hiddenRegions ?? []).map(r =>
+                r.id === id ? { ...r, x, y } : r
+            ),
+        }));
+    }
+
+    function resizeRegion(id: string, width: number, height: number) {
+        setState(prev => ({
+            ...prev,
+            hiddenRegions: (prev.hiddenRegions ?? []).map(r =>
+                r.id === id ? { ...r, width, height } : r
+            ),
+        }));
+    }
+
+    function deleteRegion(id: string) {
+        setState(prev => ({
+            ...prev,
+            hiddenRegions: (prev.hiddenRegions ?? []).filter(r => r.id !== id),
+        }));
+        removeFromSelection(new Set([id]));
+    }
+
+    // Build a set of instance IDs hidden from the current player
+    const hiddenInstanceIds = useMemo(() => {
+        const hidden = new Set<string>();
+        if (!assignedPlayerId) return hidden;
+        const otherRegions = (state.hiddenRegions ?? []).filter(r => r.playerId !== assignedPlayerId);
+        if (otherRegions.length === 0) return hidden;
+        for (const inst of state.instances) {
+            const proto = prototypeMap.get(inst.prototypeId);
+            if (!proto) continue;
+            const resolved = resolveProps(proto, inst);
+            const scale = (resolved.scale as number) ?? 1;
+            // Approximate instance bounds — cards/tokens/decks use ~100×150 base, boards vary
+            let w = 100 * scale;
+            let h = 150 * scale;
+            if (proto.type === 'token') { w = 50 * scale; h = 50 * scale; }
+            if (proto.type === 'board') { w = 200 * scale; h = 200 * scale; }
+            const instRect: Rect2D = { x: inst.x, y: inst.y, width: w, height: h };
+            for (const region of otherRegions) {
+                const regionRect: Rect2D = { x: region.x, y: region.y, width: region.width, height: region.height };
+                if (rectsIntersect(instRect, regionRect)) {
+                    hidden.add(inst.id);
+                    break;
+                }
+            }
+        }
+        return hidden;
+    }, [state.instances, state.hiddenRegions, assignedPlayerId, prototypeMap]);
+
+    const playerMap = useMemo(() => {
+        const map = new Map<string, import('./state_management/types').Player>();
+        for (const p of state.players) map.set(p.id, p);
+        return map;
+    }, [state.players]);
 
     // --- Persistence ---
 
@@ -763,9 +888,14 @@ export default function App() {
                 onLoad={handleLoad}
                 onSpawn={spawnInstance}
                 onEditPrototype={openProtoEditor}
+                onDeletePrototype={deletePrototype}
+                onNewPrototype={() => setNewProtoOpen(true)}
                 onAddPlayer={addPlayer}
                 onDeletePlayer={deletePlayer}
+                onAddHiddenRegion={addHiddenRegion}
                 isHost={isHost}
+                editMode={editMode}
+                onEditModeChange={setEditMode}
             />
             <Button
                 variant="default"
@@ -810,11 +940,31 @@ export default function App() {
                             }
                         }}>
                         {state.instances.map(inst => {
+                            if (hiddenInstanceIds.has(inst.id)) return null;
                             const proto = prototypeMap.get(inst.prototypeId);
                             if (!proto) return null;
                             const locked = !!(inst.props?.locked);
                             const hovered = locked ? false : marqueeHitIds ? marqueeHitIds.has(inst.id) : undefined;
                             return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), hovered, targetedId === inst.id);
+                        })}
+                        {(state.hiddenRegions ?? []).map(region => {
+                            const player = playerMap.get(region.playerId);
+                            if (!player) return null;
+                            return (
+                                <HiddenRegion
+                                    key={region.id}
+                                    id={region.id}
+                                    x={region.x}
+                                    y={region.y}
+                                    width={region.width}
+                                    height={region.height}
+                                    color={player.color}
+                                    selected={isHost && editMode && selectedIds.has(region.id)}
+                                    onDragEnd={isHost && editMode ? updateRegionPosition : undefined}
+                                    onResize={isHost && editMode ? resizeRegion : undefined}
+                                    draggable={isHost && editMode}
+                                />
+                            );
                         })}
                     </Layer>
                     {selBox && (
@@ -850,6 +1000,7 @@ export default function App() {
                 placeholders={getInstPlaceholders()}
             />
             <JoinModal opened={!assignedPlayerId} onJoin={claimPlayer} />
+            <NewProtoModal opened={newProtoOpen} onClose={() => setNewProtoOpen(false)} onCreate={createPrototype} />
         </>
     );
 }

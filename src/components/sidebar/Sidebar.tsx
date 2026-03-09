@@ -1,4 +1,4 @@
-import { Drawer, Button, Stack, Divider, Text as MantineText, Badge, UnstyledButton, Group as MantineGroup, ActionIcon } from '@mantine/core';
+import { Drawer, Button, Stack, Divider, Text as MantineText, Badge, UnstyledButton, Group as MantineGroup, ActionIcon, SegmentedControl } from '@mantine/core';
 import type { Prototype, CanvasState, Player } from '../../state_management/types';
 
 interface SidebarProps {
@@ -9,12 +9,17 @@ interface SidebarProps {
     onLoad: () => void;
     onSpawn: (prototypeId: string, e: React.MouseEvent) => void;
     onEditPrototype: (protoId: string) => void;
+    onDeletePrototype: (protoId: string) => void;
+    onNewPrototype: () => void;
     onAddPlayer: () => void;
     onDeletePlayer: (id: string) => void;
+    onAddHiddenRegion: (playerId: string) => void;
     isHost: boolean;
+    editMode: boolean;
+    onEditModeChange: (editMode: boolean) => void;
 }
 
-export function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEditPrototype, onAddPlayer, onDeletePlayer, isHost }: SidebarProps) {
+export function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEditPrototype, onDeletePrototype, onNewPrototype, onAddPlayer, onDeletePlayer, onAddHiddenRegion, isHost, editMode, onEditModeChange }: SidebarProps) {
     return (
         <Drawer position='right' opened={opened} onClose={onClose} trapFocus={false} closeOnClickOutside={false} withOverlay={false}>
             <h2 style={{
@@ -28,19 +33,33 @@ export function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEdi
             <Stack>
                 <Button onClick={onSave}>Save</Button>
                 <Button onClick={onLoad}>Load</Button>
-                <Divider label="Prototypes" />
-                {state.prototypes.map(proto => (
-                    <PrototypeEntry key={proto.id} proto={proto} onSpawn={onSpawn} onEdit={onEditPrototype} />
-                ))}
+                {editMode && (
+                    <>
+                        <Divider label="Prototypes" />
+                        <Button variant="light" size="xs" onClick={onNewPrototype}>+ New Prototype</Button>
+                        {state.prototypes.map(proto => (
+                            <PrototypeEntry key={proto.id} proto={proto} onSpawn={onSpawn} onEdit={onEditPrototype} onDelete={onDeletePrototype} />
+                        ))}
+                    </>
+                )}
                 <Divider label="Players" />
                 {state.players.map(player => (
-                    <PlayerEntry key={player.id} player={player} onDelete={onDeletePlayer} />
+                    <PlayerEntry key={player.id} player={player} onDelete={editMode ? onDeletePlayer : undefined} onAddHiddenRegion={isHost && editMode ? onAddHiddenRegion : undefined} />
                 ))}
-                <Button variant="light" size="xs" onClick={onAddPlayer}>+ Add Player</Button>
+                {editMode && <Button variant="light" size="xs" onClick={onAddPlayer}>+ Add Player</Button>}
                 {isHost && (
                     <>
                         <Divider />
                         <MantineText size="xs" c="dimmed" ta="center">You are the host</MantineText>
+                        <SegmentedControl
+                            value={editMode ? 'edit' : 'play'}
+                            onChange={(v) => onEditModeChange(v === 'edit')}
+                            data={[
+                                { label: 'Edit', value: 'edit' },
+                                { label: 'Play', value: 'play' },
+                            ]}
+                            fullWidth
+                        />
                     </>
                 )}
             </Stack>
@@ -48,7 +67,7 @@ export function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEdi
     );
 }
 
-function PrototypeEntry({ proto, onSpawn, onEdit }: { proto: Prototype; onSpawn: (id: string, e: React.MouseEvent) => void; onEdit: (id: string) => void }) {
+function PrototypeEntry({ proto, onSpawn, onEdit, onDelete }: { proto: Prototype; onSpawn: (id: string, e: React.MouseEvent) => void; onEdit: (id: string) => void; onDelete: (id: string) => void }) {
     return (
         <MantineGroup gap="xs" wrap="nowrap">
             <UnstyledButton
@@ -67,11 +86,14 @@ function PrototypeEntry({ proto, onSpawn, onEdit }: { proto: Prototype; onSpawn:
                 </Stack>
             </UnstyledButton>
             <Button size="xs" variant="subtle" onClick={() => onEdit(proto.id)}>Edit</Button>
+            <ActionIcon variant="subtle" color="red" size="sm" onClick={() => onDelete(proto.id)}>
+                ✕
+            </ActionIcon>
         </MantineGroup>
     );
 }
 
-function PlayerEntry({ player, onDelete }: { player: Player; onDelete: (id: string) => void }) {
+function PlayerEntry({ player, onDelete, onAddHiddenRegion }: { player: Player; onDelete?: (id: string) => void; onAddHiddenRegion?: (playerId: string) => void }) {
     return (
         <MantineGroup gap="sm" wrap="nowrap">
             <div style={{
@@ -82,9 +104,16 @@ function PlayerEntry({ player, onDelete }: { player: Player; onDelete: (id: stri
                 flexShrink: 0,
             }} />
             <MantineText size="sm" style={{ flex: 1 }}>{player.name}</MantineText>
-            <ActionIcon variant="subtle" color="red" size="sm" onClick={() => onDelete(player.id)}>
-                ✕
-            </ActionIcon>
+            {onAddHiddenRegion && (
+                <ActionIcon variant="subtle" size="sm" title="Add hidden region" onClick={() => onAddHiddenRegion(player.id)}>
+                    ▣
+                </ActionIcon>
+            )}
+            {onDelete && (
+                <ActionIcon variant="subtle" color="red" size="sm" onClick={() => onDelete(player.id)}>
+                    ✕
+                </ActionIcon>
+            )}
         </MantineGroup>
     );
 }

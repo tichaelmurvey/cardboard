@@ -23,11 +23,21 @@ export interface Player {
     claimedBy?: string;
 }
 
+export interface HiddenRegion {
+    id: ObjectId;
+    playerId: ObjectId;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 export interface CanvasState {
     version: 1;
     prototypes: Prototype[];
     instances: Instance[];
     players: Player[];
+    hiddenRegions: HiddenRegion[];
 }
 
 /** Resolve an instance's effective props by merging prototype defaults with instance overrides. */
