@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Stage, Layer, Rect } from 'react-konva';
 import type { KonvaEventObject } from 'konva/lib/Node';
 import { Button } from '@mantine/core';
@@ -6,6 +6,7 @@ import { useDisclosure } from '@mantine/hooks';
 import Konva from 'konva';
 import { DEFAULT_STATE } from './state_management/defaults';
 import { downloadJson, uploadJson } from './state_management/persistence';
+import { convertTTSSave } from './state_management/importTTS';
 import type { CanvasState, Instance, Prototype } from './state_management/types';
 import { resolveProps } from './state_management/types';
 import { rectsOverlap50, rectsIntersect } from './utils/geometry';
@@ -14,34 +15,41 @@ import { renderInstance, getZOrder, getGroupId } from './canvas/renderInstance';
 import { Sidebar } from './components/sidebar/Sidebar';
 import { ContextMenu } from './components/context-menu/ContextMenu';
 import type { ContextMenuItem } from './components/context-menu/ContextMenu';
-import { ProtoEditorModal } from './components/editor/ProtoEditorModal';
-import type { ProtoDraft } from './components/editor/ProtoEditorModal';
-import { InstEditorModal } from './components/editor/InstEditorModal';
-import type { InstDraft } from './components/editor/InstEditorModal';
+import { EditorModal, EMPTY_DRAFT } from './components/editor/EditorModal';
+import type { EditorDraft } from './components/editor/EditorModal';
 import { useMultiplayer } from './multiplayer/useMultiplayer';
 import { useRoom } from './multiplayer/useRoom';
 import { JoinModal } from './components/editor/JoinModal';
 import { NewProtoModal } from './components/editor/NewProtoModal';
 import { HiddenRegion } from './components/hidden-region/HiddenRegion';
+import useImage from 'use-image';
+import { PLAYER_COLORS, MARQUEE_STROKE, TOOLTIP_BG, TOOLTIP_FG } from './styles/style_consts';
+
+// Size the background to cover the viewport at maximum zoom-out (MIN_SCALE = 0.1)
+const BG_SIZE = Math.max(window.innerWidth, window.innerHeight) / 0.1;
 
 export default function App() {
     const roomCode = useRoom();
     const [opened, { open, close }] = useDisclosure(false);
     const [state, setState] = useState<CanvasState>(DEFAULT_STATE);
     const { isHost, assignedPlayerId, claimPlayer } = useMultiplayer(roomCode ?? '', state, setState);
+    const hostPlayerId = useMemo(() => state.players.find(p => p.claimedBy === state.hostClientId)?.id ?? null, [state.players, state.hostClientId]);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const layerRef = useRef<Konva.Layer>(null);
     const pendingDragId = useRef<string | null>(null);
-    const [selBox, setSelBox] = useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
+    const selBoxRef = useRef<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
+    const marqueeRectRef = useRef<Konva.Rect | null>(null);
+    const marqueeLayerRef = useRef<Konva.Layer | null>(null);
     const [marqueeHitIds, setMarqueeHitIds] = useState<Set<string> | null>(null);
     const isSelecting = useRef(false);
     const dragStartPos = useRef<Map<string, { x: number; y: number }>>(new Map());
-    const [hoveredId, setHoveredId] = useState<string | null>(null);
+    const hoveredId = useRef<string | null>(null);
+    const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; instanceId: string | null } | null>(null);
     const [editingProtoId, setEditingProtoId] = useState<string | null>(null);
-    const [protoDraft, setProtoDraft] = useState<ProtoDraft>({ text: '', scale: '1', imageSrc: '' });
+    const [protoDraft, setProtoDraft] = useState<EditorDraft>({ ...EMPTY_DRAFT, scale: '1' });
     const [editingInstId, setEditingInstId] = useState<string | null>(null);
-    const [instDraft, setInstDraft] = useState<InstDraft>({ text: '', scale: '', imageSrc: '' });
+    const [instDraft, setInstDraft] = useState<EditorDraft>(EMPTY_DRAFT);
     const [stageScale, setStageScale] = useState(1);
     const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
     const isPanning = useRef(false);
@@ -50,8 +58,12 @@ export default function App() {
     const canvasRef = useRef<HTMLDivElement>(null);
     const [clipboard, setClipboard] = useState<Instance[]>([]);
     const [targetedId, setTargetedId] = useState<string | null>(null);
+    const targetedIdRef = useRef<string | null>(null);
+    const mergeCheckCounter = useRef(0);
     const [newProtoOpen, setNewProtoOpen] = useState(false);
-    const [editMode, setEditMode] = useState(true);
+    const [editMode, setEditMode] = useState(false);
+
+    const [bgImage] = useImage(new URL('./assets/background.jpg', import.meta.url).href);
 
     const prototypeMap = useMemo(() => {
         const map = new Map<string, Prototype>();
@@ -92,11 +104,34 @@ export default function App() {
         removeFromSelection(ids);
     }
 
+    function deleteSelected(ids: Set<string>) {
+        if (ids.size === 0) return;
+        setState(prev => ({
+            ...prev,
+            instances: prev.instances.filter(inst => !ids.has(inst.id)),
+            hiddenRegions: (prev.hiddenRegions ?? []).filter(r => !ids.has(r.id)),
+        }));
+        removeFromSelection(ids);
+    }
+
     function getFocusedIds(): Set<string> {
         const ids = new Set(selectedIds);
         if (marqueeHitIds) for (const id of marqueeHitIds) ids.add(id);
-        if (hoveredId) ids.add(hoveredId);
+        if (hoveredId.current) ids.add(hoveredId.current);
         return ids;
+    }
+
+    function flipInstances(ids: Set<string>) {
+        if (ids.size === 0) return;
+        setState(prev => ({
+            ...prev,
+            instances: prev.instances.map(inst => {
+                if (!ids.has(inst.id)) return inst;
+                const proto = prototypeMap.get(inst.prototypeId);
+                if (!proto || !resolveProps(proto, inst).hasBack) return inst;
+                return { ...inst, props: { ...inst.props, flipped: !inst.props?.flipped } };
+            }),
+        }));
     }
 
     function scaleInstances(ids: Set<string>, factor: number) {
@@ -118,17 +153,41 @@ export default function App() {
     const MIN_SCALE = 0.1;
     const MAX_SCALE = 10;
 
+    const zoomSyncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    function clampPosition(x: number, y: number, scale: number) {
+        const half = BG_SIZE / 2;
+        const minX = -(half * scale - window.innerWidth);
+        const maxX = half * scale;
+        const minY = -(half * scale - window.innerHeight);
+        const maxY = half * scale;
+        return {
+            x: Math.min(maxX, Math.max(minX, x)),
+            y: Math.min(maxY, Math.max(minY, y)),
+        };
+    }
+
+    function syncStageTransform() {
+        const stage = stageRef.current;
+        if (!stage) return;
+        setStageScale(stage.scaleX());
+        setStagePos(stage.position());
+    }
+
     function zoomAtPoint(newScale: number, pointX: number, pointY: number) {
+        const stage = stageRef.current!;
+        const oldScale = stage.scaleX();
         newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
         const mousePointTo = {
-            x: (pointX - stagePos.x) / stageScale,
-            y: (pointY - stagePos.y) / stageScale,
+            x: (pointX - stage.x()) / oldScale,
+            y: (pointY - stage.y()) / oldScale,
         };
-        setStageScale(newScale);
-        setStagePos({
-            x: pointX - mousePointTo.x * newScale,
-            y: pointY - mousePointTo.y * newScale,
-        });
+        stage.scale({ x: newScale, y: newScale });
+        stage.position(clampPosition(
+            pointX - mousePointTo.x * newScale,
+            pointY - mousePointTo.y * newScale,
+            newScale,
+        ));
     }
 
     function handleWheel(e: KonvaEventObject<WheelEvent>) {
@@ -136,14 +195,20 @@ export default function App() {
         const stage = e.target.getStage()!;
         const pointer = stage.getPointerPosition()!;
         const direction = e.evt.deltaY > 0 ? -1 : 1;
-        const newScale = direction > 0 ? stageScale * ZOOM_FACTOR : stageScale / ZOOM_FACTOR;
+        const oldScale = stage.scaleX();
+        const newScale = direction > 0 ? oldScale * ZOOM_FACTOR : oldScale / ZOOM_FACTOR;
         zoomAtPoint(newScale, pointer.x, pointer.y);
+        if (zoomSyncTimer.current) clearTimeout(zoomSyncTimer.current);
+        zoomSyncTimer.current = setTimeout(syncStageTransform, 150);
     }
 
     function screenToStage(screenX: number, screenY: number) {
+        const stage = stageRef.current!;
+        const scale = stage.scaleX();
+        const pos = stage.position();
         return {
-            x: (screenX - stagePos.x) / stageScale,
-            y: (screenY - stagePos.y) / stageScale,
+            x: (screenX - pos.x) / scale,
+            y: (screenY - pos.y) / scale,
         };
     }
 
@@ -178,15 +243,17 @@ export default function App() {
         'w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
         '+', '=', '-', '_',
     ]), []);
-    const stateRef = useRef({ stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId, state });
+    const stateRef = useRef({ stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId: hoveredId.current, state });
     useEffect(() => {
-        stateRef.current = { stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId, state };
+        stateRef.current = { stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId: hoveredId.current, state };
     });
 
     useEffect(() => {
         const SCALE_SPEED = 1.02;
 
         function tick() {
+            const stage = stageRef.current;
+            if (!stage) { animRef.current = requestAnimationFrame(tick); return; }
             const keys = heldKeys.current;
             let dx = 0, dy = 0;
             if (keys.has('w') || keys.has('ArrowUp')) dy += PAN_SPEED;
@@ -194,7 +261,8 @@ export default function App() {
             if (keys.has('a') || keys.has('ArrowLeft')) dx += PAN_SPEED;
             if (keys.has('d') || keys.has('ArrowRight')) dx -= PAN_SPEED;
             if (dx !== 0 || dy !== 0) {
-                setStagePos(p => ({ x: p.x + dx, y: p.y + dy }));
+                const pos = stage.position();
+                stage.position(clampPosition(pos.x + dx, pos.y + dy, stage.scaleX()));
             }
 
             const scaleUp = keys.has('+') || keys.has('=');
@@ -209,17 +277,15 @@ export default function App() {
                 if (focused.size > 0) {
                     scaleInstances(focused, factor);
                 } else {
-                    setStageScale(prev => {
-                        const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, prev * factor));
-                        const cx = window.innerWidth / 2;
-                        const cy = window.innerHeight / 2;
-                        setStagePos(p => {
-                            const mx = (cx - p.x) / prev;
-                            const my = (cy - p.y) / prev;
-                            return { x: cx - mx * newScale, y: cy - my * newScale };
-                        });
-                        return newScale;
-                    });
+                    const prev = stage.scaleX();
+                    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, prev * factor));
+                    const cx = window.innerWidth / 2;
+                    const cy = window.innerHeight / 2;
+                    const pos = stage.position();
+                    const mx = (cx - pos.x) / prev;
+                    const my = (cy - pos.y) / prev;
+                    stage.scale({ x: newScale, y: newScale });
+                    stage.position(clampPosition(cx - mx * newScale, cy - my * newScale, newScale));
                 }
             }
 
@@ -234,6 +300,7 @@ export default function App() {
             if (animRef.current) {
                 cancelAnimationFrame(animRef.current);
                 animRef.current = 0;
+                syncStageTransform();
             }
         }
 
@@ -263,37 +330,40 @@ export default function App() {
 
     function drawFromDeck() {
         const focusedIds = getFocusedIds();
-        const deckInst = state.instances.find(inst => {
+        const containerInst = state.instances.find(inst => {
             if (!focusedIds.has(inst.id)) return false;
             const proto = prototypeMap.get(inst.prototypeId);
-            return proto?.type === "deck";
+            return proto?.type === "deck" || proto?.type === "stack";
         });
-        if (!deckInst) return;
+        if (!containerInst) return;
 
-        const cards = (deckInst.props?.cards as { prototypeId: string; props?: Record<string, unknown> }[]) ?? [];
-        if (cards.length === 0) return;
+        const containerProto = prototypeMap.get(containerInst.prototypeId);
+        const isStack = containerProto?.type === "stack";
+        const itemsKey = isStack ? "items" : "cards";
+        const entries = (containerInst.props?.[itemsKey] as { prototypeId: string; props?: Record<string, unknown> }[]) ?? [];
+        if (entries.length === 0) return;
 
-        const topCard = cards[cards.length - 1];
+        const topItem = entries[entries.length - 1];
         const newId = crypto.randomUUID();
-        const remaining = cards.slice(0, -1);
+        const remaining = entries.slice(0, -1);
 
         setState(prev => {
             let instances: Instance[];
             if (remaining.length === 1) {
-                const lastCard = remaining[0];
+                const lastItem = remaining[0];
                 instances = [
-                    ...prev.instances.filter(i => i.id !== deckInst.id),
-                    { id: crypto.randomUUID(), prototypeId: lastCard.prototypeId, x: deckInst.x, y: deckInst.y, props: lastCard.props },
-                    { id: newId, prototypeId: topCard.prototypeId, x: deckInst.x, y: deckInst.y, props: topCard.props },
+                    ...prev.instances.filter(i => i.id !== containerInst.id),
+                    { id: crypto.randomUUID(), prototypeId: lastItem.prototypeId, x: containerInst.x, y: containerInst.y, props: lastItem.props },
+                    { id: newId, prototypeId: topItem.prototypeId, x: containerInst.x, y: containerInst.y, props: topItem.props },
                 ];
             } else {
                 instances = [
                     ...prev.instances.map(inst =>
-                        inst.id === deckInst.id
-                            ? { ...inst, props: { ...inst.props, cards: remaining } }
+                        inst.id === containerInst.id
+                            ? { ...inst, props: { ...inst.props, [itemsKey]: remaining } }
                             : inst
                     ),
-                    { id: newId, prototypeId: topCard.prototypeId, x: deckInst.x, y: deckInst.y, props: topCard.props },
+                    { id: newId, prototypeId: topItem.prototypeId, x: containerInst.x, y: containerInst.y, props: topItem.props },
                 ];
             }
             return { ...prev, instances };
@@ -306,12 +376,15 @@ export default function App() {
         function handleKeyDown(e: KeyboardEvent) {
             if ((e.key === 'Delete' || e.key === 'Backspace') && editMode) {
                 e.preventDefault();
-                deleteInstances(getFocusedIds());
+                deleteSelected(getFocusedIds());
             }
             if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
                 const ids = getFocusedIds();
                 if (ids.size === 0) return;
                 setClipboard(state.instances.filter(inst => ids.has(inst.id)));
+            }
+            if (e.key === 'f') {
+                flipInstances(getFocusedIds());
             }
             if (e.key === ' ') {
                 e.preventDefault();
@@ -334,14 +407,14 @@ export default function App() {
 
     // --- Drag & drop ---
 
-    function updatePosition(id: string, x: number, y: number) {
+    const updatePosition = useCallback((id: string, x: number, y: number) => {
         setState(prev => ({
             ...prev,
             instances: prev.instances.map(inst =>
                 inst.id === id ? { ...inst, x, y } : inst
             ),
         }));
-    }
+    }, []);
 
     function spawnInstance(prototypeId: string, e: React.MouseEvent) {
         const id = crypto.randomUUID();
@@ -394,7 +467,14 @@ export default function App() {
 
     function handleDragMove(e: KonvaEventObject<DragEvent>) {
         const draggedId = e.target.id();
-        setTargetedId(findMergeTarget(draggedId));
+        mergeCheckCounter.current++;
+        if (mergeCheckCounter.current % 6 === 0) {
+            const newTarget = findMergeTarget(draggedId);
+            if (newTarget !== targetedIdRef.current) {
+                targetedIdRef.current = newTarget;
+                setTargetedId(newTarget);
+            }
+        }
 
         if (dragStartPos.current.size <= 1 || !layerRef.current) return;
         const startPos = dragStartPos.current.get(draggedId);
@@ -413,6 +493,7 @@ export default function App() {
 
     function handleDragEnd(e: KonvaEventObject<DragEvent>) {
         e.target.opacity(1);
+        targetedIdRef.current = null;
         setTargetedId(null);
         const draggedId = e.target.id();
 
@@ -446,14 +527,14 @@ export default function App() {
         for (const node of sorted) node.moveToTop();
     }
 
-    // --- Card/Deck merge ---
+    // --- Card/Deck/Stack merge ---
 
     function findMergeTarget(draggedId: string): string | null {
         if (!layerRef.current) return null;
         const draggedInst = state.instances.find(i => i.id === draggedId);
         if (!draggedInst) return null;
         const draggedProto = prototypeMap.get(draggedInst.prototypeId);
-        if (!draggedProto || (draggedProto.type !== "card" && draggedProto.type !== "deck")) return null;
+        if (!draggedProto || draggedProto.type === "board") return null;
         const draggedNode = layerRef.current.findOne(`#${draggedId}`);
         if (!draggedNode) return null;
         const draggedRect = draggedNode.getClientRect();
@@ -462,8 +543,14 @@ export default function App() {
             if (targetInst.id === draggedId) continue;
             const targetProto = prototypeMap.get(targetInst.prototypeId);
             if (!targetProto) continue;
-            if (draggedProto.type === "card" && targetProto.type !== "card" && targetProto.type !== "deck") continue;
+            // Card merges: card→card, card→deck
+            if (draggedProto.type === "card" && targetProto.type !== "card" && targetProto.type !== "deck" && targetProto.type !== "stack") continue;
+            // Deck merges: deck→deck only
             if (draggedProto.type === "deck" && targetProto.type !== "deck") continue;
+            // Token merges: token→token, token→stack
+            if (draggedProto.type === "token" && targetProto.type !== "token" && targetProto.type !== "stack") continue;
+            // Stack merges: stack→stack only
+            if (draggedProto.type === "stack" && targetProto.type !== "stack") continue;
             const targetNode = layerRef.current!.findOne(`#${targetInst.id}`);
             if (!targetNode) continue;
             if (rectsOverlap50(draggedRect, targetNode.getClientRect())) return targetInst.id;
@@ -480,6 +567,7 @@ export default function App() {
         const targetInst = state.instances.find(i => i.id === targetId)!;
         const targetProto = prototypeMap.get(targetInst.prototypeId)!;
 
+        // Card → Deck
         if (draggedProto.type === "card" && targetProto.type === "deck") {
             const cardEntry = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
             setState(prev => ({
@@ -495,6 +583,7 @@ export default function App() {
             return;
         }
 
+        // Card → Card = new Deck
         if (draggedProto.type === "card" && targetProto.type === "card") {
             const deckProtoId = getOrCreateDeckPrototype();
             const bottomCard = { prototypeId: targetInst.prototypeId, props: targetInst.props };
@@ -510,6 +599,7 @@ export default function App() {
             return;
         }
 
+        // Deck → Deck
         if (draggedProto.type === "deck" && targetProto.type === "deck") {
             const draggedCards = (draggedInst.props?.cards as unknown[]) ?? [];
             setState(prev => ({
@@ -522,6 +612,56 @@ export default function App() {
                     ),
             }));
             removeFromSelection([draggedId]);
+            return;
+        }
+
+        // Any non-container → Stack
+        if (draggedProto.type !== "deck" && draggedProto.type !== "stack" && targetProto.type === "stack") {
+            const itemEntry = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
+            setState(prev => ({
+                ...prev,
+                instances: prev.instances
+                    .filter(i => i.id !== draggedId)
+                    .map(i => i.id === targetId
+                        ? { ...i, props: { ...i.props, items: [...((i.props?.items as unknown[]) ?? []), itemEntry] } }
+                        : i
+                    ),
+            }));
+            removeFromSelection([draggedId]);
+            return;
+        }
+
+        // Token → Token = new Stack (also Card → Stack via card→card path above won't trigger, so handle card→stack here)
+        if (draggedProto.type !== "deck" && draggedProto.type !== "stack" && draggedProto.type !== "board"
+            && targetProto.type !== "deck" && targetProto.type !== "stack" && targetProto.type !== "board") {
+            const stackProtoId = getOrCreateStackPrototype();
+            const bottomItem = { prototypeId: targetInst.prototypeId, props: targetInst.props };
+            const topItem = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
+            setState(prev => ({
+                ...prev,
+                instances: [
+                    ...prev.instances.filter(i => i.id !== draggedId && i.id !== targetId),
+                    { id: crypto.randomUUID(), prototypeId: stackProtoId, x: targetInst.x, y: targetInst.y, props: { items: [bottomItem, topItem] } },
+                ],
+            }));
+            removeFromSelection([draggedId, targetId]);
+            return;
+        }
+
+        // Stack → Stack
+        if (draggedProto.type === "stack" && targetProto.type === "stack") {
+            const draggedItems = (draggedInst.props?.items as unknown[]) ?? [];
+            setState(prev => ({
+                ...prev,
+                instances: prev.instances
+                    .filter(i => i.id !== draggedId)
+                    .map(i => i.id === targetId
+                        ? { ...i, props: { ...i.props, items: [...((i.props?.items as unknown[]) ?? []), ...draggedItems] } }
+                        : i
+                    ),
+            }));
+            removeFromSelection([draggedId]);
+            return;
         }
     }
 
@@ -536,7 +676,44 @@ export default function App() {
         return id;
     }
 
+    function getOrCreateStackPrototype(): string {
+        const existing = state.prototypes.find(p => p.type === "stack");
+        if (existing) return existing.id;
+        const id = crypto.randomUUID();
+        setState(prev => ({
+            ...prev,
+            prototypes: [...prev.prototypes, { id, type: "stack", props: { text: "Stack" } }],
+        }));
+        return id;
+    }
+
     // --- Marquee selection ---
+
+    const lastMarqueeCheck = useRef(0);
+
+    function updateMarqueeRect() {
+        const box = selBoxRef.current;
+        const rect = marqueeRectRef.current;
+        const layer = marqueeLayerRef.current;
+        const stage = stageRef.current;
+        if (!rect || !layer || !stage) return;
+        if (box) {
+            const scale = stage.scaleX();
+            const pos = stage.position();
+            layer.scaleX(1 / scale);
+            layer.scaleY(1 / scale);
+            layer.x(-pos.x / scale);
+            layer.y(-pos.y / scale);
+            rect.x(Math.min(box.x1, box.x2));
+            rect.y(Math.min(box.y1, box.y2));
+            rect.width(Math.abs(box.x2 - box.x1));
+            rect.height(Math.abs(box.y2 - box.y1));
+            rect.visible(true);
+        } else {
+            rect.visible(false);
+        }
+        layer.batchDraw();
+    }
 
     function computeMarqueeHits(box: { x1: number; y1: number; x2: number; y2: number }) {
         if (!layerRef.current) return new Set<string>();
@@ -563,10 +740,15 @@ export default function App() {
             panStart.current = { x: evt.clientX - stagePos.x, y: evt.clientY - stagePos.y };
             return;
         }
-        if (e.target !== e.target.getStage()) return;
+        if (evt.button !== 0) return;
+        if (e.target !== e.target.getStage()) {
+            const groupId = getGroupId(e);
+            if (!isLocked(groupId)) return;
+        }
         const pos = e.target.getStage()!.getPointerPosition()!;
         isSelecting.current = true;
-        setSelBox({ x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y });
+        selBoxRef.current = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
+        updateMarqueeRect();
         setMarqueeHitIds(null);
         if (!evt.shiftKey) setSelectedIds(new Set());
     }
@@ -574,26 +756,41 @@ export default function App() {
     function handleStageMouseMove(e: KonvaEventObject<MouseEvent>) {
         const evt = e.evt as MouseEvent;
         if (isPanning.current) {
-            setStagePos({ x: evt.clientX - panStart.current.x, y: evt.clientY - panStart.current.y });
+            const stage = stageRef.current!;
+            stage.position(clampPosition(
+                evt.clientX - panStart.current.x,
+                evt.clientY - panStart.current.y,
+                stage.scaleX(),
+            ));
             return;
         }
-        if (!isSelecting.current) return;
+        if (!isSelecting.current || !selBoxRef.current) return;
         const pos = e.target.getStage()!.getPointerPosition()!;
-        const newBox = selBox ? { ...selBox, x2: pos.x, y2: pos.y } : null;
-        setSelBox(newBox);
-        if (newBox) setMarqueeHitIds(computeMarqueeHits(newBox));
+        selBoxRef.current = { ...selBoxRef.current, x2: pos.x, y2: pos.y };
+        updateMarqueeRect();
+        const now = performance.now();
+        if (now - lastMarqueeCheck.current >= 50) {
+            lastMarqueeCheck.current = now;
+            const newHits = computeMarqueeHits(selBoxRef.current);
+            setMarqueeHitIds(prev => {
+                if (newHits.size !== (prev?.size ?? 0)) return newHits;
+                for (const id of newHits) { if (!prev?.has(id)) return newHits; }
+                return prev;
+            });
+        }
     }
 
     function handleStageMouseUp() {
-        if (isPanning.current) { isPanning.current = false; return; }
-        if (!isSelecting.current || !selBox) {
+        if (isPanning.current) { isPanning.current = false; syncStageTransform(); return; }
+        if (!isSelecting.current || !selBoxRef.current) {
             isSelecting.current = false;
-            setSelBox(null);
+            selBoxRef.current = null;
+            updateMarqueeRect();
             setMarqueeHitIds(null);
             return;
         }
         isSelecting.current = false;
-        const hits = computeMarqueeHits(selBox);
+        const hits = computeMarqueeHits(selBoxRef.current);
         if (hits.size > 0) {
             setSelectedIds(prev => {
                 const next = new Set(prev);
@@ -601,7 +798,8 @@ export default function App() {
                 return next;
             });
         }
-        setSelBox(null);
+        selBoxRef.current = null;
+        updateMarqueeRect();
         setMarqueeHitIds(null);
     }
 
@@ -618,6 +816,38 @@ export default function App() {
         };
     }, [contextMenu]);
 
+    function updateTooltip(id: string, evt: MouseEvent) {
+        if (!id) { setTooltip(null); return; }
+        const inst = state.instances.find(i => i.id === id);
+        if (!inst) { setTooltip(null); return; }
+        const proto = prototypeMap.get(inst.prototypeId);
+        if (!proto) { setTooltip(null); return; }
+        if (proto.type === 'deck') {
+            const count = ((inst.props?.cards as unknown[]) ?? []).length;
+            setTooltip({
+                x: evt.clientX, y: evt.clientY, text: `[${count}]\n[space] to draw` });
+        } else if (proto.type === 'stack') {
+            const count = ((inst.props?.items as unknown[]) ?? []).length;
+            setTooltip({
+                x: evt.clientX, y: evt.clientY, text: `[${count}]\n[space] to draw` });
+        } else {
+            setTooltip(null);
+        }
+    }
+
+    function getContextMenuNames(): { heading?: string; subheading?: string } {
+        if (!contextMenu?.instanceId) return {};
+        const inst = state.instances.find(i => i.id === contextMenu.instanceId);
+        if (!inst) return {};
+        const proto = prototypeMap.get(inst.prototypeId);
+        if (!proto) return {};
+        const instName = (inst.props?.name as string) || undefined;
+        const protoName = (proto.props.name as string) || undefined;
+        const heading = instName ?? protoName ?? proto.type;
+        const subheading = instName && protoName && instName !== protoName ? protoName : undefined;
+        return { heading, subheading };
+    }
+
     function getContextMenuItems(): ContextMenuItem[] {
         if (!contextMenu) return [];
         if (!editMode) return [];
@@ -630,47 +860,70 @@ export default function App() {
             ];
         }
         if (instId) {
-            return [
+            const inst = state.instances.find(i => i.id === instId);
+            const instProto = inst ? prototypeMap.get(inst.prototypeId) : null;
+            const canFlip = !!(inst && instProto && resolveProps(instProto, inst).hasBack);
+            const items: ContextMenuItem[] = [
+                { label: 'Edit', action: () => { openInstEditor(instId); setContextMenu(null); } },
+                {
+                    label: 'Edit Prototype', action: () => {
+                        const inst = state.instances.find(i => i.id === instId);
+                        if (inst) openProtoEditor(inst.prototypeId);
+                        setContextMenu(null);
+                    }
+                },
                 { label: isLocked(instId) ? 'Unlock' : 'Lock', action: () => toggleLock(instId) },
+            ];
+            if (canFlip) {
+                items.push({
+                    label: 'Flip', action: () => {
+                        flipInstances(new Set([instId]));
+                        setContextMenu(null);
+                    }
+                });
+            }
+            items.push(
                 { label: 'Grow', action: () => scaleInstances(new Set([instId]), 1.2) },
                 { label: 'Shrink', action: () => scaleInstances(new Set([instId]), 1 / 1.2) },
-                { label: 'Copy', action: () => {
-                    const inst = state.instances.find(i => i.id === instId);
-                    if (inst) setClipboard([inst]);
-                    setContextMenu(null);
-                }},
-                { label: 'Edit', action: () => { openInstEditor(instId); setContextMenu(null); } },
-                { label: 'Edit Prototype', action: () => {
-                    const inst = state.instances.find(i => i.id === instId);
-                    if (inst) openProtoEditor(inst.prototypeId);
-                    setContextMenu(null);
-                }},
-                { label: 'Make Prototype', action: () => {
-                    const inst = state.instances.find(i => i.id === instId);
-                    if (!inst) return;
-                    const proto = prototypeMap.get(inst.prototypeId);
-                    if (!proto) return;
-                    const newProtoId = crypto.randomUUID();
-                    const merged = resolveProps(proto, inst);
-                    const { locked, ...protoProps } = merged as Record<string, unknown> & { locked?: unknown };
-                    setState(prev => ({
-                        ...prev,
-                        prototypes: [...prev.prototypes, { id: newProtoId, type: proto.type, props: protoProps }],
-                        instances: prev.instances.map(i =>
-                            i.id === instId ? { ...i, prototypeId: newProtoId, props: undefined } : i
-                        ),
-                    }));
-                    setContextMenu(null);
-                }},
+                {
+                    label: 'Copy', action: () => {
+                        const inst = state.instances.find(i => i.id === instId);
+                        if (inst) setClipboard([inst]);
+                        setContextMenu(null);
+                    }
+                },
+
+                {
+                    label: 'Make Prototype', action: () => {
+                        const inst = state.instances.find(i => i.id === instId);
+                        if (!inst) return;
+                        const proto = prototypeMap.get(inst.prototypeId);
+                        if (!proto) return;
+                        const newProtoId = crypto.randomUUID();
+                        const merged = resolveProps(proto, inst);
+                        const { locked, ...protoProps } = merged as Record<string, unknown> & { locked?: unknown };
+                        setState(prev => ({
+                            ...prev,
+                            prototypes: [...prev.prototypes, { id: newProtoId, type: proto.type, props: protoProps }],
+                            instances: prev.instances.map(i =>
+                                i.id === instId ? { ...i, prototypeId: newProtoId, props: undefined } : i
+                            ),
+                        }));
+                        setContextMenu(null);
+                    }
+                },
                 { label: 'Delete', action: () => { deleteInstances(new Set([instId])); setContextMenu(null); } },
-            ];
+            );
+            return items;
         }
         if (clipboard.length > 0) {
-            return [{ label: 'Paste', action: () => {
-                const stageCoords = screenToStage(contextMenu.x, contextMenu.y);
-                pasteAt(stageCoords.x, stageCoords.y);
-                setContextMenu(null);
-            }}];
+            return [{
+                label: 'Paste', action: () => {
+                    const stageCoords = screenToStage(contextMenu.x, contextMenu.y);
+                    pasteAt(stageCoords.x, stageCoords.y);
+                    setContextMenu(null);
+                }
+            }];
         }
         return [];
     }
@@ -679,28 +932,79 @@ export default function App() {
 
     const editingProto = editingProtoId ? prototypeMap.get(editingProtoId) ?? null : null;
 
+    function draftFromProps(props: Record<string, unknown>, defaultScale: string = '1'): EditorDraft {
+        return {
+            name: (props.name as string) ?? '',
+            text: (props.text as string) ?? '',
+            scale: props.scale != null ? String(props.scale) : defaultScale,
+            imageSrc: (props.src as string) ?? (props.imageSrc as string) ?? '',
+            hasBack: !!(props.hasBack),
+            backImageSrc: (props.backImageSrc as string) ?? '',
+            backText: (props.backText as string) ?? '',
+            flipped: !!(props.flipped),
+            customSizing: !!(props.customSizing),
+            sizeX: props.sizeX != null ? String(props.sizeX) : '',
+            sizeY: props.sizeY != null ? String(props.sizeY) : '',
+        };
+    }
+
+    function draftToUpdates(draft: EditorDraft, existingProps?: Record<string, unknown>): Record<string, unknown> {
+        const updates: Record<string, unknown> = {};
+        if (draft.name) updates.name = draft.name;
+        if (draft.text) updates.text = draft.text;
+        const scaleVal = parseFloat(draft.scale);
+        if (!isNaN(scaleVal) && scaleVal > 0) updates.scale = scaleVal;
+        if (draft.imageSrc) {
+            const imageKey = existingProps && 'src' in existingProps ? 'src' : 'imageSrc';
+            updates[imageKey] = draft.imageSrc;
+        }
+        // Clear front grid crop if image URL changed
+        const prevImage = (existingProps?.src as string) ?? (existingProps?.imageSrc as string) ?? '';
+        if (draft.imageSrc !== prevImage) {
+            updates.gridCol = undefined;
+            updates.gridRow = undefined;
+            updates.gridNumWidth = undefined;
+            updates.gridNumHeight = undefined;
+        }
+        updates.hasBack = draft.hasBack;
+        updates.backImageSrc = draft.hasBack ? draft.backImageSrc : '';
+        updates.backText = draft.hasBack ? draft.backText : '';
+        // Clear back grid crop if back image URL changed
+        const prevBack = (existingProps?.backImageSrc as string) ?? '';
+        if ((draft.hasBack ? draft.backImageSrc : '') !== prevBack) {
+            updates.backGridCol = undefined;
+            updates.backGridRow = undefined;
+            updates.backGridNumWidth = undefined;
+            updates.backGridNumHeight = undefined;
+        }
+        updates.flipped = draft.flipped;
+        updates.customSizing = draft.customSizing;
+        if (draft.customSizing) {
+            const x = parseFloat(draft.sizeX);
+            const y = parseFloat(draft.sizeY);
+            if (!isNaN(x) && x > 0) updates.sizeX = x;
+            if (!isNaN(y) && y > 0) updates.sizeY = y;
+        }
+        return updates;
+    }
+
     function openProtoEditor(protoId: string) {
         const proto = prototypeMap.get(protoId);
         if (!proto) return;
-        setProtoDraft({
-            text: (proto.props.text as string) ?? '',
-            scale: String((proto.props.scale as number) ?? 1),
-            imageSrc: (proto.props.src as string) ?? (proto.props.imageSrc as string) ?? '',
-        });
+        setProtoDraft({ ...draftFromProps(proto.props), type: proto.type });
         setEditingProtoId(protoId);
     }
 
     function saveProtoEdits() {
         if (!editingProto) return;
-        const updates: Record<string, unknown> = { text: protoDraft.text };
-        const scaleVal = parseFloat(protoDraft.scale);
-        if (!isNaN(scaleVal) && scaleVal > 0) updates.scale = scaleVal;
-        const imageKey = 'src' in editingProto.props ? 'src' : 'imageSrc';
-        updates[imageKey] = protoDraft.imageSrc;
+        const updates = draftToUpdates(protoDraft, editingProto.props);
+        // Proto always saves text even if empty
+        updates.text = protoDraft.text;
+        const newType = protoDraft.type ?? editingProto.type;
         setState(prev => ({
             ...prev,
             prototypes: prev.prototypes.map(p =>
-                p.id === editingProto.id ? { ...p, props: { ...p.props, ...updates } } : p
+                p.id === editingProto.id ? { ...p, type: newType, props: { ...p.props, ...updates } } : p
             ),
         }));
         setEditingProtoId(null);
@@ -711,27 +1015,25 @@ export default function App() {
     function openInstEditor(instanceId: string) {
         const inst = state.instances.find(i => i.id === instanceId);
         if (!inst) return;
-        setInstDraft({
-            text: (inst.props?.text as string) ?? '',
-            scale: inst.props?.scale != null ? String(inst.props.scale) : '',
-            imageSrc: (inst.props?.src as string) ?? (inst.props?.imageSrc as string) ?? '',
-        });
+        const proto = prototypeMap.get(inst.prototypeId);
+        setInstDraft(draftFromProps(inst.props ?? {}, ''));
+        // Carry hasBack and type from prototype
+        if (proto) {
+            setInstDraft(prev => ({ ...prev, hasBack: !!(proto.props.hasBack), type: proto.type }));
+        }
         setEditingInstId(instanceId);
     }
 
     function saveInstEdits() {
         if (!editingInst) return;
         const proto = prototypeMap.get(editingInst.prototypeId);
-        const updates: Record<string, unknown> = {};
-        if (instDraft.text) updates.text = instDraft.text;
-        const scaleVal = parseFloat(instDraft.scale);
-        if (!isNaN(scaleVal) && scaleVal > 0) updates.scale = scaleVal;
-        if (instDraft.imageSrc) {
-            const imageKey = proto && 'src' in proto.props ? 'src' : 'imageSrc';
-            updates[imageKey] = instDraft.imageSrc;
-        }
+        const updates = draftToUpdates(instDraft, proto?.props);
+        const newType = instDraft.type;
         setState(prev => ({
             ...prev,
+            prototypes: newType && proto ? prev.prototypes.map(p =>
+                p.id === proto.id ? { ...p, type: newType } : p
+            ) : prev.prototypes,
             instances: prev.instances.map(inst =>
                 inst.id === editingInstId ? { ...inst, props: { ...inst.props, ...updates } } : inst
             ),
@@ -740,9 +1042,10 @@ export default function App() {
     }
 
     function getInstPlaceholders() {
-        if (!editingInst) return { text: '', scale: '', imageSrc: '' };
+        if (!editingInst) return { name: '', text: '', scale: '', imageSrc: '' };
         const p = prototypeMap.get(editingInst.prototypeId);
         return {
+            name: (p?.props.name as string) ?? '',
             text: (p?.props.text as string) ?? '',
             scale: String((p?.props.scale as number) ?? 1),
             imageSrc: (p?.props.src as string) ?? (p?.props.imageSrc as string) ?? '',
@@ -751,7 +1054,6 @@ export default function App() {
 
     // --- Players ---
 
-    const PLAYER_COLORS = ['#e03131', '#1971c2', '#2f9e44', '#f08c00', '#9c36b5', '#e8590c', '#0ca678', '#3bc9db'];
 
     function addPlayer() {
         const usedColors = new Set(state.players.map(p => p.color));
@@ -834,6 +1136,7 @@ export default function App() {
     // Build a set of instance IDs hidden from the current player
     const hiddenInstanceIds = useMemo(() => {
         const hidden = new Set<string>();
+        if (editMode) return hidden;
         if (!assignedPlayerId) return hidden;
         const otherRegions = (state.hiddenRegions ?? []).filter(r => r.playerId !== assignedPlayerId);
         if (otherRegions.length === 0) return hidden;
@@ -847,7 +1150,7 @@ export default function App() {
             let h = 150 * scale;
             if (proto.type === 'token') { w = 50 * scale; h = 50 * scale; }
             if (proto.type === 'board') { w = 200 * scale; h = 200 * scale; }
-            const instRect: Rect2D = { x: inst.x, y: inst.y, width: w, height: h };
+            const instRect: Rect2D = { x: inst.x - w / 2, y: inst.y - h / 2, width: w, height: h };
             for (const region of otherRegions) {
                 const regionRect: Rect2D = { x: region.x, y: region.y, width: region.width, height: region.height };
                 if (rectsIntersect(instRect, regionRect)) {
@@ -857,7 +1160,7 @@ export default function App() {
             }
         }
         return hidden;
-    }, [state.instances, state.hiddenRegions, assignedPlayerId, prototypeMap]);
+    }, [state.instances, state.hiddenRegions, assignedPlayerId, prototypeMap, editMode]);
 
     const playerMap = useMemo(() => {
         const map = new Map<string, import('./state_management/types').Player>();
@@ -874,6 +1177,39 @@ export default function App() {
         } catch {
             // user cancelled or invalid file
         }
+    }
+
+    function pickTTSFile(onResult: (imported: CanvasState) => void) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = async () => {
+            const file = input.files?.[0];
+            if (!file) return;
+            try {
+                const text = await file.text();
+                const raw = JSON.parse(text);
+                const imported = await convertTTSSave(raw);
+                onResult(imported);
+            } catch {
+                // user cancelled or invalid file
+            }
+        };
+        input.click();
+    }
+
+    function handleLoadTTS() {
+        pickTTSFile((imported) => setState(imported));
+    }
+
+    function handleImportTTS() {
+        pickTTSFile((imported) => {
+            setState(prev => ({
+                ...prev,
+                prototypes: [...prev.prototypes, ...imported.prototypes],
+                instances: [...prev.instances, ...imported.instances],
+            }));
+        });
     }
 
     // --- Render ---
@@ -893,7 +1229,10 @@ export default function App() {
                 onAddPlayer={addPlayer}
                 onDeletePlayer={deletePlayer}
                 onAddHiddenRegion={addHiddenRegion}
+                onLoadTTS={handleLoadTTS}
+                onImportTTS={handleImportTTS}
                 isHost={isHost}
+                hostPlayerId={hostPlayerId}
                 editMode={editMode}
                 onEditModeChange={setEditMode}
             />
@@ -918,12 +1257,30 @@ export default function App() {
                         setContextMenu({ x: e.evt.clientX, y: e.evt.clientY, instanceId: id });
                     }}
                 >
+                    <Layer listening={false}>
+                        {bgImage && <Rect
+                            x={-BG_SIZE / 2}
+                            y={-BG_SIZE / 2}
+                            width={BG_SIZE}
+                            height={BG_SIZE}
+                            fillPatternImage={bgImage}
+                            fillPatternRepeat="repeat"
+                            fillPatternScaleX={BG_SIZE / (bgImage.naturalWidth * 10)}
+                            fillPatternScaleY={BG_SIZE / (bgImage.naturalWidth * 10)}
+                        />}
+                    </Layer>
                     <Layer ref={layerRef} onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}
                         onMouseEnter={(e) => {
+                            if (isPanning.current || isSelecting.current) return;
                             const id = getGroupId(e);
-                            if (id && !isLocked(id)) setHoveredId(id);
+                            if (id && !isLocked(id)) hoveredId.current = id;
+                            updateTooltip(id, e.evt);
                         }}
-                        onMouseLeave={() => setHoveredId(null)}
+                        onMouseLeave={() => {
+                            if (isPanning.current || isSelecting.current) return;
+                            hoveredId.current = null;
+                            setTooltip(null);
+                        }}
                         onClick={(e) => {
                             const id = getGroupId(e);
                             if (!id || isLocked(id)) return;
@@ -945,7 +1302,7 @@ export default function App() {
                             if (!proto) return null;
                             const locked = !!(inst.props?.locked);
                             const hovered = locked ? false : marqueeHitIds ? marqueeHitIds.has(inst.id) : undefined;
-                            return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), hovered, targetedId === inst.id);
+                            return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), hovered, targetedId === inst.id, prototypeMap);
                         })}
                         {(state.hiddenRegions ?? []).map(region => {
                             const player = playerMap.get(region.playerId);
@@ -967,37 +1324,58 @@ export default function App() {
                             );
                         })}
                     </Layer>
-                    {selBox && (
-                        <Layer scaleX={1 / stageScale} scaleY={1 / stageScale} x={-stagePos.x / stageScale} y={-stagePos.y / stageScale}>
-                            <Rect
-                                x={Math.min(selBox.x1, selBox.x2)}
-                                y={Math.min(selBox.y1, selBox.y2)}
-                                width={Math.abs(selBox.x2 - selBox.x1)}
-                                height={Math.abs(selBox.y2 - selBox.y1)}
-                                stroke="white"
-                                strokeWidth={1}
-                                dash={[6, 3]}
-                                listening={false}
-                            />
-                        </Layer>
-                    )}
+                    <Layer ref={marqueeLayerRef} listening={false}>
+                        <Rect
+                            ref={marqueeRectRef}
+                            visible={false}
+                            stroke={MARQUEE_STROKE}
+                            strokeWidth={1}
+                            dash={[6, 3]}
+                            listening={false}
+                        />
+                    </Layer>
                 </Stage>
             </div>
-            {contextMenu && <ContextMenu x={contextMenu.x} y={contextMenu.y} items={getContextMenuItems()} />}
-            <ProtoEditorModal
+            {contextMenu && <ContextMenu x={contextMenu.x} y={contextMenu.y} {...getContextMenuNames()} items={getContextMenuItems()} />}
+            {tooltip && !contextMenu && (
+                <div style={{
+                    position: 'absolute',
+                    left: tooltip.x + 12,
+                    top: tooltip.y + 12,
+                    background: TOOLTIP_BG,
+                    color: TOOLTIP_FG,
+                    padding: '4px 8px',
+                    borderRadius: 4,
+                    fontSize: 12,
+                    pointerEvents: 'none',
+                    zIndex: 1000,
+                    whiteSpace: 'pre',
+                }}><span>{tooltip.text}</span></div>
+            )}
+            <EditorModal
                 opened={!!editingProto}
                 onClose={() => setEditingProtoId(null)}
+                title="Edit Prototype"
                 draft={protoDraft}
                 onDraftChange={setProtoDraft}
                 onSave={saveProtoEdits}
+                protoType={editingProto?.type}
             />
-            <InstEditorModal
+            <EditorModal
                 opened={!!editingInst}
                 onClose={() => setEditingInstId(null)}
+                title="Edit Instance"
                 draft={instDraft}
                 onDraftChange={setInstDraft}
                 onSave={saveInstEdits}
                 placeholders={getInstPlaceholders()}
+                protoType={editingInst ? prototypeMap.get(editingInst.prototypeId)?.type : undefined}
+                isInstance
+                onEditPrototype={editingInst ? () => {
+                    const protoId = editingInst.prototypeId;
+                    setEditingInstId(null);
+                    openProtoEditor(protoId);
+                } : undefined}
             />
             <JoinModal opened={!assignedPlayerId} onJoin={claimPlayer} />
             <NewProtoModal opened={newProtoOpen} onClose={() => setNewProtoOpen(false)} onCreate={createPrototype} />

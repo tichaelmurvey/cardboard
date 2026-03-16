@@ -1,15 +1,18 @@
-NEXT
-TTS file imports
+ONGOING
 dextrous imports
-Edit mode for host
-Make tokens flippable
-Display who is the host for everyone
-Regions should appear in current view
-regions should delete with delete key
-edit/play toggle should stay at bottom
-all hidden regions should be viewable during edit
+
+NEXT
+additive load
+Add ctrl z
+prototype only load
+make zoom, pan, drag more efficient with high numbers
+prototype folders
 
 LATER
+draw key tooltip hint
+token shape property
+highlight shape for tokens e.g. square tokens
+Reset to prototype option
 Add animations e.g. card drawer, token flip
 Field validation for edit modals
 handle mutual grab situation

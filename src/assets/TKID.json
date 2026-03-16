@@ -1,0 +1,3314 @@
+{
+	"ObjectStates": [
+		{
+			"Name": "Deck",
+			"Nickname": "courtiers",
+			"Description": "",
+			"LuaScript": "",
+			"Transform": {
+				"posX": 0,
+				"posY": 0,
+				"posZ": 0,
+				"rotX": 0,
+				"rotY": 180,
+				"rotZ": 180,
+				"scaleX": 1.5354437229388096,
+				"scaleY": 1,
+				"scaleZ": 1.5354437229388096
+			},
+			"DeckIDs": [
+				100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+				113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125,
+				126, 127, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210,
+				211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222
+			],
+			"ContainedObjects": [
+				{
+					"CardID": 100,
+					"Name": "card",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 101,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 102,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 103,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 104,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 105,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 106,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 107,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 108,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 109,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 110,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 111,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 112,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 113,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 114,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 115,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 116,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 117,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 118,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 119,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 120,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 121,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 122,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 123,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 124,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 125,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 126,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 127,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 200,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 201,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 202,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 203,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 204,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 205,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 206,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 207,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 208,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 209,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 210,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 211,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 212,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 213,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 214,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 215,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 216,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 217,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 218,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 219,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 220,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 221,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				},
+				{
+					"CardID": 222,
+					"Name": "card",
+					"Nickname": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 180,
+						"scaleX": 1,
+						"scaleY": 1,
+						"scaleZ": 1
+					},
+					"tags": ["courtier"]
+				}
+			],
+			"CustomDeck": {
+				"1": {
+					"FaceUrl": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_J4VGHO8Gvu77uWwf2hbX_0.png?alt=media&token=7c0ee188-4760-4a8e-ac3e-c9b583ab7f16",
+					"BackUrl": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_J4VGHO8Gvu77uWwf2hbX_0.png?alt=media&token=f17b0e65-cbb3-4db4-b76a-af66a784e98c",
+					"NumWidth": 7,
+					"NumHeight": 4,
+					"BackIsHidden": true,
+					"UniqueBack": false,
+					"Type": 0
+				},
+				"2": {
+					"FaceUrl": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_J4VGHO8Gvu77uWwf2hbX_1.png?alt=media&token=b57d863f-17fe-48a6-8856-90d81f8dd01d",
+					"BackUrl": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_J4VGHO8Gvu77uWwf2hbX_1.png?alt=media&token=6fd95465-7cf9-43e8-8875-04d8baacfedf",
+					"NumWidth": 7,
+					"NumHeight": 4,
+					"BackIsHidden": true,
+					"UniqueBack": false,
+					"Type": 0
+				}
+			}
+		},
+		{
+			"Name": "Bag",
+			"Nickname": "frankle",
+			"Description": "",
+			"LuaScript": "",
+			"Transform": {
+				"posX": 0,
+				"posY": 0,
+				"posZ": -5,
+				"rotX": 0,
+				"rotY": 0,
+				"rotZ": 0,
+				"scaleX": 1,
+				"scaleY": 1,
+				"scaleZ": 1
+			},
+			"ContainedObjects": [
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_0.png?alt=media&token=7efcd463-86b8-4d88-bb7a-13dfa9cfb1a9",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_0.png?alt=media&token=5b9cdd96-76a1-4309-87e6-7ca5768c3095",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_1.png?alt=media&token=ea80a61b-50be-489c-99a9-d63aaee82bbf",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_1.png?alt=media&token=8645b9f8-0a62-4541-8f73-4ee84b1f2c7c",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_2.png?alt=media&token=a92d88a0-8cbb-4d47-9fe4-11c178f8cb76",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_2.png?alt=media&token=744a937c-a898-4371-8d53-be72b97f5207",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_3.png?alt=media&token=888c77d8-d3ad-4ccf-ad4d-2803535eddd8",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_3.png?alt=media&token=9c852613-05db-4118-88a4-057093c2278d",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_4.png?alt=media&token=1359c51c-4bcf-4b40-8042-8186591260ea",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_4.png?alt=media&token=16296c15-e195-4ff7-8b78-524d37af462a",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_5.png?alt=media&token=1e3b22f2-440c-4730-bbe6-7f350be2bf1f",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_5.png?alt=media&token=b9b319fb-1170-400d-82fe-e2f44455179c",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_6.png?alt=media&token=09d12115-b52a-4a1e-961e-04c2e3ff054f",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_6.png?alt=media&token=e52b19ac-714a-4964-9497-6a90c868c91f",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_7.png?alt=media&token=c7759974-2277-4dc8-839a-ed3287e152b3",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_7.png?alt=media&token=be0d0a61-8971-4854-9203-d5510fb680f7",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_8.png?alt=media&token=f8ece621-34c8-4449-bada-2402d814f73b",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_8.png?alt=media&token=a86b46e9-1173-46d4-8128-fcf070f47aaa",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_9.png?alt=media&token=f46a9920-cd06-4db7-9fe1-977087286ac9",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_9.png?alt=media&token=e91b5229-fc7b-4e07-aa8e-d160f0896991",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_9.png?alt=media&token=f46a9920-cd06-4db7-9fe1-977087286ac9",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_9.png?alt=media&token=e91b5229-fc7b-4e07-aa8e-d160f0896991",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=1d01273f-e0a0-4565-86a0-547913d163d6",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=f142abc3-e56f-4d62-9653-7230e2b82fea",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=1d01273f-e0a0-4565-86a0-547913d163d6",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=f142abc3-e56f-4d62-9653-7230e2b82fea",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=1d01273f-e0a0-4565-86a0-547913d163d6",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=f142abc3-e56f-4d62-9653-7230e2b82fea",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=1d01273f-e0a0-4565-86a0-547913d163d6",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=f142abc3-e56f-4d62-9653-7230e2b82fea",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=1d01273f-e0a0-4565-86a0-547913d163d6",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_11.png?alt=media&token=f142abc3-e56f-4d62-9653-7230e2b82fea",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=98c980b3-2ce4-4a65-9afe-b4e1cba01f40",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=4c319143-d1e5-4452-83f4-32ecbc8bcd96",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=98c980b3-2ce4-4a65-9afe-b4e1cba01f40",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=4c319143-d1e5-4452-83f4-32ecbc8bcd96",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=98c980b3-2ce4-4a65-9afe-b4e1cba01f40",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=4c319143-d1e5-4452-83f4-32ecbc8bcd96",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=98c980b3-2ce4-4a65-9afe-b4e1cba01f40",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=4c319143-d1e5-4452-83f4-32ecbc8bcd96",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=98c980b3-2ce4-4a65-9afe-b4e1cba01f40",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_16.png?alt=media&token=4c319143-d1e5-4452-83f4-32ecbc8bcd96",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=d9965aae-337b-4a08-a6dd-34dc8e9a0468",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=9fd22e0c-5599-47f6-a82b-f1caa63ec35e",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=d9965aae-337b-4a08-a6dd-34dc8e9a0468",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=9fd22e0c-5599-47f6-a82b-f1caa63ec35e",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=d9965aae-337b-4a08-a6dd-34dc8e9a0468",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=9fd22e0c-5599-47f6-a82b-f1caa63ec35e",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=d9965aae-337b-4a08-a6dd-34dc8e9a0468",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=9fd22e0c-5599-47f6-a82b-f1caa63ec35e",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=d9965aae-337b-4a08-a6dd-34dc8e9a0468",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_21.png?alt=media&token=9fd22e0c-5599-47f6-a82b-f1caa63ec35e",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=cfe819b4-a122-41e0-97ea-a3d895bb00e2",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=43ecab03-19a9-4838-ac8b-621f419b2c98",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=cfe819b4-a122-41e0-97ea-a3d895bb00e2",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=43ecab03-19a9-4838-ac8b-621f419b2c98",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=cfe819b4-a122-41e0-97ea-a3d895bb00e2",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=43ecab03-19a9-4838-ac8b-621f419b2c98",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=cfe819b4-a122-41e0-97ea-a3d895bb00e2",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=43ecab03-19a9-4838-ac8b-621f419b2c98",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=cfe819b4-a122-41e0-97ea-a3d895bb00e2",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_26.png?alt=media&token=43ecab03-19a9-4838-ac8b-621f419b2c98",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=8f52cbc1-c3b9-462a-b3b5-e644b1c2c4e9",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=a56cc7b7-7344-46fc-bdcd-71cf7c1d53a0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=8f52cbc1-c3b9-462a-b3b5-e644b1c2c4e9",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=a56cc7b7-7344-46fc-bdcd-71cf7c1d53a0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=8f52cbc1-c3b9-462a-b3b5-e644b1c2c4e9",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=a56cc7b7-7344-46fc-bdcd-71cf7c1d53a0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=8f52cbc1-c3b9-462a-b3b5-e644b1c2c4e9",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=a56cc7b7-7344-46fc-bdcd-71cf7c1d53a0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=8f52cbc1-c3b9-462a-b3b5-e644b1c2c4e9",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_31.png?alt=media&token=a56cc7b7-7344-46fc-bdcd-71cf7c1d53a0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_36.png?alt=media&token=ac5a9bbd-0315-4129-9adc-263e63681f21",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_36.png?alt=media&token=baed280c-17b7-4ab9-b539-1a48fddc1edb",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_36.png?alt=media&token=ac5a9bbd-0315-4129-9adc-263e63681f21",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_36.png?alt=media&token=baed280c-17b7-4ab9-b539-1a48fddc1edb",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_36.png?alt=media&token=ac5a9bbd-0315-4129-9adc-263e63681f21",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_36.png?alt=media&token=baed280c-17b7-4ab9-b539-1a48fddc1edb",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_36.png?alt=media&token=ac5a9bbd-0315-4129-9adc-263e63681f21",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_36.png?alt=media&token=baed280c-17b7-4ab9-b539-1a48fddc1edb",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_40.png?alt=media&token=1d346cd3-f45c-434d-9d2a-97b589778214",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_40.png?alt=media&token=d2f03356-6b31-47c0-90c8-7d40ffd873e1",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_40.png?alt=media&token=1d346cd3-f45c-434d-9d2a-97b589778214",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_40.png?alt=media&token=d2f03356-6b31-47c0-90c8-7d40ffd873e1",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_40.png?alt=media&token=1d346cd3-f45c-434d-9d2a-97b589778214",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_40.png?alt=media&token=d2f03356-6b31-47c0-90c8-7d40ffd873e1",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_40.png?alt=media&token=1d346cd3-f45c-434d-9d2a-97b589778214",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_40.png?alt=media&token=d2f03356-6b31-47c0-90c8-7d40ffd873e1",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_44.png?alt=media&token=457dbeda-385e-4063-9328-5c3ced0f26a5",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_44.png?alt=media&token=c6b99d2c-c31c-4aa7-8906-1e86be4a3ff4",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_44.png?alt=media&token=457dbeda-385e-4063-9328-5c3ced0f26a5",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_44.png?alt=media&token=c6b99d2c-c31c-4aa7-8906-1e86be4a3ff4",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_44.png?alt=media&token=457dbeda-385e-4063-9328-5c3ced0f26a5",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_44.png?alt=media&token=c6b99d2c-c31c-4aa7-8906-1e86be4a3ff4",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_44.png?alt=media&token=457dbeda-385e-4063-9328-5c3ced0f26a5",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_44.png?alt=media&token=c6b99d2c-c31c-4aa7-8906-1e86be4a3ff4",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_48.png?alt=media&token=a65d0eaf-738f-4aff-ab6d-dc72eb5dd21d",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_48.png?alt=media&token=5a35d169-13ee-4eb8-867a-bb1513a26abf",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_48.png?alt=media&token=a65d0eaf-738f-4aff-ab6d-dc72eb5dd21d",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_48.png?alt=media&token=5a35d169-13ee-4eb8-867a-bb1513a26abf",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_48.png?alt=media&token=a65d0eaf-738f-4aff-ab6d-dc72eb5dd21d",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_48.png?alt=media&token=5a35d169-13ee-4eb8-867a-bb1513a26abf",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_48.png?alt=media&token=a65d0eaf-738f-4aff-ab6d-dc72eb5dd21d",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_48.png?alt=media&token=5a35d169-13ee-4eb8-867a-bb1513a26abf",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_52.png?alt=media&token=e1c20ac0-572e-47d2-8b01-a6ddd15a7e4f",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_52.png?alt=media&token=06bb88a7-ddb8-474e-aa8e-97c108016452",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_52.png?alt=media&token=e1c20ac0-572e-47d2-8b01-a6ddd15a7e4f",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_52.png?alt=media&token=06bb88a7-ddb8-474e-aa8e-97c108016452",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_52.png?alt=media&token=e1c20ac0-572e-47d2-8b01-a6ddd15a7e4f",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_52.png?alt=media&token=06bb88a7-ddb8-474e-aa8e-97c108016452",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_52.png?alt=media&token=e1c20ac0-572e-47d2-8b01-a6ddd15a7e4f",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_52.png?alt=media&token=06bb88a7-ddb8-474e-aa8e-97c108016452",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_56.png?alt=media&token=c2dc9c02-1f71-419e-ab5c-173b8da4eb69",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_56.png?alt=media&token=69f3c3ae-1793-4593-9142-0b9426a27d50",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_56.png?alt=media&token=c2dc9c02-1f71-419e-ab5c-173b8da4eb69",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_56.png?alt=media&token=69f3c3ae-1793-4593-9142-0b9426a27d50",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_56.png?alt=media&token=c2dc9c02-1f71-419e-ab5c-173b8da4eb69",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_56.png?alt=media&token=69f3c3ae-1793-4593-9142-0b9426a27d50",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_56.png?alt=media&token=c2dc9c02-1f71-419e-ab5c-173b8da4eb69",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_56.png?alt=media&token=69f3c3ae-1793-4593-9142-0b9426a27d50",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_60.png?alt=media&token=ecfa83a3-4f35-436d-9265-82c6399fbe85",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_60.png?alt=media&token=44caad80-032f-436e-974a-dcebdd441aa0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_60.png?alt=media&token=ecfa83a3-4f35-436d-9265-82c6399fbe85",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_60.png?alt=media&token=44caad80-032f-436e-974a-dcebdd441aa0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_60.png?alt=media&token=ecfa83a3-4f35-436d-9265-82c6399fbe85",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_60.png?alt=media&token=44caad80-032f-436e-974a-dcebdd441aa0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_60.png?alt=media&token=ecfa83a3-4f35-436d-9265-82c6399fbe85",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_60.png?alt=media&token=44caad80-032f-436e-974a-dcebdd441aa0",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_64.png?alt=media&token=543122ac-9903-46cf-85d5-d997a8fe9753",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_64.png?alt=media&token=b50c095b-7870-4cbc-aed2-51a710e76681",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_64.png?alt=media&token=543122ac-9903-46cf-85d5-d997a8fe9753",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_64.png?alt=media&token=b50c095b-7870-4cbc-aed2-51a710e76681",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_64.png?alt=media&token=543122ac-9903-46cf-85d5-d997a8fe9753",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_64.png?alt=media&token=b50c095b-7870-4cbc-aed2-51a710e76681",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_64.png?alt=media&token=543122ac-9903-46cf-85d5-d997a8fe9753",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_64.png?alt=media&token=b50c095b-7870-4cbc-aed2-51a710e76681",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_68.png?alt=media&token=44683e65-9e33-408c-8116-7a74e332b0c1",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_68.png?alt=media&token=84470b53-330c-438f-a206-cbcbe061a037",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_68.png?alt=media&token=44683e65-9e33-408c-8116-7a74e332b0c1",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_68.png?alt=media&token=84470b53-330c-438f-a206-cbcbe061a037",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_68.png?alt=media&token=44683e65-9e33-408c-8116-7a74e332b0c1",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_68.png?alt=media&token=84470b53-330c-438f-a206-cbcbe061a037",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_68.png?alt=media&token=44683e65-9e33-408c-8116-7a74e332b0c1",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_68.png?alt=media&token=84470b53-330c-438f-a206-cbcbe061a037",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				},
+				{
+					"Name": "Custom_Tile",
+					"Nickname": "",
+					"Description": "",
+					"Transform": {
+						"posX": 0,
+						"posY": 0,
+						"posZ": 0,
+						"rotX": 0,
+						"rotY": 180,
+						"rotZ": 0,
+						"scaleX": 0.39911308203863416,
+						"scaleY": 1,
+						"scaleZ": 0.39911308203863416
+					},
+					"tags": ["order"],
+					"CustomImage": {
+						"ImageURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_front_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=8309a168-1510-4364-b002-ed6afa7aac9c",
+						"ImageSecondaryURL": "{verifycache}https://firebasestorage.googleapis.com/v0/b/card-maker-74ec3.appspot.com/o/images%2FCC9ZjrbgUgdzMpyS6SUHvACXfq83%2FTTSFiles%2FWqAoFDp6lXFpPHEe4UnM_back_texture_1RWRAOqcpZeVJKLXRQO7_72.png?alt=media&token=0baa5cf7-23f1-4a7d-978a-edf1c63fbad9",
+						"ImageScalar": 1,
+						"WidthScale": 1,
+						"CustomTile": {
+							"Type": "2",
+							"Thickness": 0.02,
+							"Stretch": false,
+							"Stackable": true
+						}
+					}
+				}
+			]
+		}
+	]
+}

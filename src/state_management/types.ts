@@ -1,6 +1,6 @@
 export type ObjectId = string;
 
-export type ObjectType = "card" | "token" | "board" | "deck";
+export type ObjectType = "card" | "token" | "board" | "deck" | "stack";
 
 export interface Prototype {
     id: ObjectId;
@@ -38,6 +38,7 @@ export interface CanvasState {
     instances: Instance[];
     players: Player[];
     hiddenRegions: HiddenRegion[];
+    hostClientId?: string;
 }
 
 /** Resolve an instance's effective props by merging prototype defaults with instance overrides. */

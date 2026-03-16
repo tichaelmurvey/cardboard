@@ -6,10 +6,12 @@ export interface ContextMenuItem {
 interface ContextMenuProps {
     x: number;
     y: number;
+    heading?: string;
+    subheading?: string;
     items: ContextMenuItem[];
 }
 
-export function ContextMenu({ x, y, items }: ContextMenuProps) {
+export function ContextMenu({ x, y, heading, subheading, items }: ContextMenuProps) {
     if (items.length === 0) return null;
 
     return (
@@ -23,7 +25,6 @@ export function ContextMenu({ x, y, items }: ContextMenuProps) {
                 background: '#f3b963',
                 color: '#130101',
                 border: '2px double #ffe600',
-                borderRadius: 6,
                 padding: 4,
                 boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
                 display: 'flex',
@@ -31,6 +32,15 @@ export function ContextMenu({ x, y, items }: ContextMenuProps) {
                 gap: 2,
             }}
         >
+            {(heading || subheading) && (
+                <div style={{
+                    padding: '2px 12px 4px',
+                    borderBottom: '1px solid #c08030',
+                }}>
+                    {heading && <div style={{ fontSize: 13, fontWeight: 'bold' }}>{heading}</div>}
+                    {subheading && <div style={{ fontSize: 11, opacity: 0.7 }}>{subheading}</div>}
+                </div>
+            )}
             {items.map(item => (
                 <button
                     key={item.label}

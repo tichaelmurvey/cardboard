@@ -39,6 +39,7 @@ export function NewProtoModal({ opened, onClose, onCreate }: NewProtoModalProps)
                         data={TYPE_OPTIONS}
                         value={type}
                         onChange={v => { if (v) setType(v as ObjectType); }}
+                        comboboxProps={{ zIndex: 4000 }}
                     />
                     <TextInput
                         label="Name"

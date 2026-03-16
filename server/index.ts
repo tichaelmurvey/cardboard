@@ -8,6 +8,7 @@ const CLEANUP_DELAY_MS = 30 * 60 * 1000;
 interface Room {
     state: CanvasState | null;
     hostId: string | null;
+    hostClientId: string | null;
     cleanupTimer: ReturnType<typeof setTimeout> | null;
 }
 
@@ -41,6 +42,7 @@ const io = new Server(httpServer, {
 });
 
 const rooms = new Map<string, Room>();
+const socketToClientId = new Map<string, string>();
 
 function generateRoomCode(): string {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -52,7 +54,7 @@ function generateRoomCode(): string {
 function getOrCreateRoom(roomCode: string): Room {
     let room = rooms.get(roomCode);
     if (!room) {
-        room = { state: null, hostId: null, cleanupTimer: null };
+        room = { state: null, hostId: null, hostClientId: null, cleanupTimer: null };
         rooms.set(roomCode, room);
     }
     if (room.cleanupTimer) {
@@ -60,6 +62,13 @@ function getOrCreateRoom(roomCode: string): Room {
         room.cleanupTimer = null;
     }
     return room;
+}
+
+/** Stamp hostClientId onto the state before sending */
+function stampState(room: Room) {
+    if (room.state) {
+        room.state.hostClientId = room.hostClientId ?? undefined;
+    }
 }
 
 async function getRoomMemberIds(roomCode: string): Promise<string[]> {
@@ -74,23 +83,27 @@ io.on('connection', (socket) => {
     socket.on('room:join', async (roomCode: string, cid: string) => {
         currentRoom = roomCode;
         clientId = cid;
+        socketToClientId.set(socket.id, cid);
         socket.join(roomCode);
         const room = getOrCreateRoom(roomCode);
 
         console.log(`Client ${socket.id} (${cid}) joined room ${roomCode}`);
 
-        if (room.state) {
-            socket.emit('state:full', room.state);
-        }
-
         // Assign host if none
         if (!room.hostId) {
             room.hostId = socket.id;
+            room.hostClientId = cid;
             console.log(`Client ${socket.id} is now host of room ${roomCode}`);
         }
 
-        // Tell everyone in the room who the host is
+        // Tell everyone who the host socket is (for isHost determination)
         io.to(roomCode).emit('room:host', room.hostId);
+
+        // Send existing state (with hostClientId stamped) to the joining client
+        if (room.state) {
+            stampState(room);
+            socket.emit('state:full', room.state);
+        }
     });
 
     socket.on('player:claim', (name: string) => {
@@ -116,6 +129,7 @@ io.on('connection', (socket) => {
         player.claimedBy = clientId;
 
         // Broadcast updated state to all clients
+        stampState(room);
         io.to(currentRoom).emit('state:full', room.state);
         socket.emit('player:assigned', player.id);
         console.log(`Client ${clientId} claimed player ${player.id} as "${name}" in room ${currentRoom}`);
@@ -126,7 +140,8 @@ io.on('connection', (socket) => {
         const room = rooms.get(currentRoom);
         if (!room) return;
         room.state = newState;
-        socket.to(currentRoom).emit('state:full', newState);
+        stampState(room);
+        socket.to(currentRoom).emit('state:full', room.state);
     });
 
     socket.on('disconnect', async () => {
@@ -143,6 +158,7 @@ io.on('connection', (socket) => {
             console.log(`Room ${currentRoom} is empty, scheduling cleanup in 30 minutes`);
             const roomCode = currentRoom;
             room.hostId = null;
+            room.hostClientId = null;
             room.cleanupTimer = setTimeout(() => {
                 rooms.delete(roomCode);
                 console.log(`Room ${roomCode} deleted after timeout`);
@@ -153,9 +169,17 @@ io.on('connection', (socket) => {
         // Reassign host if the host left
         if (room.hostId === socket.id) {
             room.hostId = memberIds[0];
+            room.hostClientId = socketToClientId.get(memberIds[0]) ?? null;
             console.log(`New host for room ${currentRoom}: ${room.hostId}`);
+            // Broadcast new host socket id
             io.to(currentRoom).emit('room:host', room.hostId);
+            // Broadcast state with updated hostClientId
+            if (room.state) {
+                stampState(room);
+                io.to(currentRoom).emit('state:full', room.state);
+            }
         }
+        socketToClientId.delete(socket.id);
     });
 });
 

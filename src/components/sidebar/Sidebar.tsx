@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Drawer, Button, Stack, Divider, Text as MantineText, Badge, UnstyledButton, Group as MantineGroup, ActionIcon, SegmentedControl } from '@mantine/core';
 import type { Prototype, CanvasState, Player } from '../../state_management/types';
 
@@ -14,12 +15,15 @@ interface SidebarProps {
     onAddPlayer: () => void;
     onDeletePlayer: (id: string) => void;
     onAddHiddenRegion: (playerId: string) => void;
+    onLoadTTS: () => void;
+    onImportTTS: () => void;
     isHost: boolean;
+    hostPlayerId: string | null;
     editMode: boolean;
     onEditModeChange: (editMode: boolean) => void;
 }
 
-export function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEditPrototype, onDeletePrototype, onNewPrototype, onAddPlayer, onDeletePlayer, onAddHiddenRegion, isHost, editMode, onEditModeChange }: SidebarProps) {
+export const Sidebar = memo(function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEditPrototype, onDeletePrototype, onNewPrototype, onAddPlayer, onDeletePlayer, onAddHiddenRegion, onLoadTTS, onImportTTS, isHost, hostPlayerId, editMode, onEditModeChange }: SidebarProps) {
     return (
         <Drawer position='right' opened={opened} onClose={onClose} trapFocus={false} closeOnClickOutside={false} withOverlay={false}>
             <h2 style={{
@@ -30,25 +34,29 @@ export function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEdi
                 fontSize: "5rem",
                 color: "sienna"
             }}>Cardboard</h2>
-            <Stack>
-                <Button onClick={onSave}>Save</Button>
-                <Button onClick={onLoad}>Load</Button>
-                {editMode && (
-                    <>
-                        <Divider label="Prototypes" />
-                        <Button variant="light" size="xs" onClick={onNewPrototype}>+ New Prototype</Button>
-                        {state.prototypes.map(proto => (
-                            <PrototypeEntry key={proto.id} proto={proto} onSpawn={onSpawn} onEdit={onEditPrototype} onDelete={onDeletePrototype} />
-                        ))}
-                    </>
-                )}
-                <Divider label="Players" />
-                {state.players.map(player => (
-                    <PlayerEntry key={player.id} player={player} onDelete={editMode ? onDeletePlayer : undefined} onAddHiddenRegion={isHost && editMode ? onAddHiddenRegion : undefined} />
-                ))}
-                {editMode && <Button variant="light" size="xs" onClick={onAddPlayer}>+ Add Player</Button>}
+            <Stack h="100%" justify='space-between'>
+                <Stack>
+                    <Button onClick={onSave}>Save</Button>
+                    <Button onClick={onLoad}>Load</Button>
+                    {editMode && <Button onClick={onLoadTTS}>Load TTS Save</Button>}
+                    {editMode && <Button onClick={onImportTTS}>Import from TTS/Dextrous</Button>}
+                    {editMode && (
+                        <>
+                            <Divider label="Prototypes" />
+                            <Button variant="light" size="xs" onClick={onNewPrototype}>+ New Prototype</Button>
+                            {state.prototypes.map(proto => (
+                                <PrototypeEntry key={proto.id} proto={proto} onSpawn={onSpawn} onEdit={onEditPrototype} onDelete={onDeletePrototype} />
+                            ))}
+                        </>
+                    )}
+                    <Divider label="Players" />
+                    {state.players.map(player => (
+                        <PlayerEntry key={player.id} player={player} isHost={player.id === hostPlayerId} onDelete={editMode ? onDeletePlayer : undefined} onAddHiddenRegion={isHost && editMode ? onAddHiddenRegion : undefined} />
+                    ))}
+                    {editMode && <Button variant="light" size="xs" onClick={onAddPlayer}>+ Add Player</Button>}
+                </Stack>
                 {isHost && (
-                    <>
+                    <Stack>
                         <Divider />
                         <MantineText size="xs" c="dimmed" ta="center">You are the host</MantineText>
                         <SegmentedControl
@@ -60,12 +68,12 @@ export function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEdi
                             ]}
                             fullWidth
                         />
-                    </>
+                    </Stack>
                 )}
             </Stack>
         </Drawer>
     );
-}
+});
 
 function PrototypeEntry({ proto, onSpawn, onEdit, onDelete }: { proto: Prototype; onSpawn: (id: string, e: React.MouseEvent) => void; onEdit: (id: string) => void; onDelete: (id: string) => void }) {
     return (
@@ -82,6 +90,7 @@ function PrototypeEntry({ proto, onSpawn, onEdit, onDelete }: { proto: Prototype
             >
                 <Stack gap="xs">
                     <Badge variant="light">{proto.type}</Badge>
+                    {typeof proto.props.name === 'string' && proto.props.name && <MantineText size="sm" fw={500}>{proto.props.name}</MantineText>}
                     {typeof proto.props.text === 'string' && <MantineText size="sm">{proto.props.text}</MantineText>}
                 </Stack>
             </UnstyledButton>
@@ -93,7 +102,7 @@ function PrototypeEntry({ proto, onSpawn, onEdit, onDelete }: { proto: Prototype
     );
 }
 
-function PlayerEntry({ player, onDelete, onAddHiddenRegion }: { player: Player; onDelete?: (id: string) => void; onAddHiddenRegion?: (playerId: string) => void }) {
+function PlayerEntry({ player, isHost, onDelete, onAddHiddenRegion }: { player: Player; isHost: boolean; onDelete?: (id: string) => void; onAddHiddenRegion?: (playerId: string) => void }) {
     return (
         <MantineGroup gap="sm" wrap="nowrap">
             <div style={{
@@ -103,7 +112,7 @@ function PlayerEntry({ player, onDelete, onAddHiddenRegion }: { player: Player; 
                 backgroundColor: player.color,
                 flexShrink: 0,
             }} />
-            <MantineText size="sm" style={{ flex: 1 }}>{player.name}</MantineText>
+            <MantineText size="sm" style={{ flex: 1 }}>{player.name}{isHost && <MantineText span size="xs" c="dimmed"> (host)</MantineText>}</MantineText>
             {onAddHiddenRegion && (
                 <ActionIcon variant="subtle" size="sm" title="Add hidden region" onClick={() => onAddHiddenRegion(player.id)}>
                     ▣
