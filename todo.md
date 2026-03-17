@@ -1,13 +1,14 @@
 ONGOING
-Address issues in TTS save import
 
 NEXT
-Add ctrl z
 prototype folders
+Add grid image row/cell to editable properties
 prototype images
 
 LATER
+Add ctrl z
 token shape property
+loading popup for imports
 highlight shape for tokens e.g. square tokens
 Reset to prototype option
 Add animations e.g. card drawer, token flip

@@ -4,8 +4,9 @@ import { useHover } from "../../hooks/useHover";
 import { HOVER_STROKE, SELECTED_STROKE, TARGETED_STROKE, NO_STROKE } from "../../styles/style_consts";
 import useImage from "use-image";
 
-const DEFAULT_ASPECT = 1.5
-const DEFAULT_SIZE = 100
+const DEFAULT_WIDTH = 100;
+const DEFAULT_HEIGHT = 150;
+const MAX_SIDE = Math.max(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
 import type { GridCrop } from '../../canvas/gridCrop';
 import { useCropProps, gridCropEqual } from '../../canvas/gridCrop';
@@ -31,19 +32,45 @@ interface CardProps {
 export const Card = memo(function Card({ id, x, y, text = "", imageSrc, flipped, backImageSrc, backText, selected, hovered: hoveredOverride, targeted, scale = 1, gridCrop, backGridCrop, onDragEnd }: CardProps) {
     const { hovered: internalHovered, hoverProps } = useHover();
     const hovered = hoveredOverride ?? internalHovered;
-    const displayImage = flipped ? backImageSrc : imageSrc;
     const displayText = flipped ? (backText ?? "") : text;
     const activeCrop = flipped ? backGridCrop : gridCrop;
-    const [image] = useImage(displayImage ?? "");
-    const cropProps = useCropProps(image, activeCrop);
+
+    const [frontImage] = useImage(imageSrc ?? "");
+    const [backImage] = useImage(backImageSrc ?? "");
+    const renderImage = flipped ? backImage : frontImage;
+    const cropProps = useCropProps(renderImage, activeCrop);
+
+    // Derive card size from front image (or back if no front), falling back to defaults
+    const sizingImage = frontImage ?? backImage;
+    const sizingCrop = frontImage ? gridCrop : backGridCrop;
+    let cardW = DEFAULT_WIDTH;
+    let cardH = DEFAULT_HEIGHT;
+    if (sizingImage) {
+        let imgW = sizingImage.naturalWidth;
+        let imgH = sizingImage.naturalHeight;
+        if (sizingCrop) {
+            imgW /= sizingCrop.gridNumWidth;
+            imgH /= sizingCrop.gridNumHeight;
+        }
+        if (imgW > 0 && imgH > 0) {
+            const aspect = imgW / imgH;
+            if (imgW >= imgH) {
+                cardW = MAX_SIDE;
+                cardH = MAX_SIDE / aspect;
+            } else {
+                cardH = MAX_SIDE;
+                cardW = MAX_SIDE * aspect;
+            }
+        }
+    }
 
     return <Group
         id={id}
         name="card"
         x={x}
         y={y}
-        offsetX={DEFAULT_SIZE / 2}
-        offsetY={DEFAULT_SIZE * DEFAULT_ASPECT / 2}
+        offsetX={cardW / 2}
+        offsetY={cardH / 2}
         scaleX={scale}
         scaleY={scale}
         draggable
@@ -53,28 +80,28 @@ export const Card = memo(function Card({ id, x, y, text = "", imageSrc, flipped,
         }, [onDragEnd, id])}
     >
         <Rect
-            width={DEFAULT_SIZE}
-            height={DEFAULT_SIZE * DEFAULT_ASPECT}
+            width={cardW}
+            height={cardH}
             fill={"brown"}
             shadowBlur={10}
         />
-        {image && (
+        {renderImage && (
             <Image
-                image={image}
-                width={DEFAULT_SIZE}
-                height={DEFAULT_SIZE * DEFAULT_ASPECT}
+                image={renderImage}
+                width={cardW}
+                height={cardH}
                 {...cropProps}
             />
         )}
         <Rect
-            width={DEFAULT_SIZE}
-            height={DEFAULT_SIZE * DEFAULT_ASPECT}
+            width={cardW}
+            height={cardH}
             listening={false}
             {...(targeted ? TARGETED_STROKE : selected ? SELECTED_STROKE : hovered ? HOVER_STROKE : NO_STROKE)}
         />
         <Text
-            width={DEFAULT_SIZE}
-            height={DEFAULT_SIZE * DEFAULT_ASPECT}
+            width={cardW}
+            height={cardH}
             text={displayText}
             fontSize={18}
             fontFamily="Calibri"

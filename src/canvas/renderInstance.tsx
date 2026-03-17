@@ -70,7 +70,7 @@ export function renderInstance(
 
     switch (prototype.type) {
         case "board":
-            return <Board key={instance.id} id={instance.id} x={instance.x} y={instance.y} src={props.src as string} scale={scale} customSizing={props.customSizing as boolean | undefined} sizeX={props.sizeX as number | undefined} sizeY={props.sizeY as number | undefined} onDragEnd={onDragEnd} selected={selected} hovered={hovered} />;
+            return <Board key={instance.id} id={instance.id} x={instance.x} y={instance.y} src={(props.src as string) ?? (props.imageSrc as string)} scale={scale} customSizing={props.customSizing as boolean | undefined} sizeX={props.sizeX as number | undefined} sizeY={props.sizeY as number | undefined} onDragEnd={onDragEnd} selected={selected} hovered={hovered} />;
         case "card": {
             const gridCrop = buildGridCrop(props);
             const backGridCrop = buildGridCrop(props, 'back');

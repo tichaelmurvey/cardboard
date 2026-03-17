@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Drawer, Button, Stack, Divider, Text as MantineText, Badge, UnstyledButton, Group as MantineGroup, ActionIcon, SegmentedControl } from '@mantine/core';
 import type { Prototype, Player } from '../../state_management/types';
 
@@ -80,26 +80,42 @@ export const Sidebar = memo(function Sidebar({ opened, onClose, prototypes, play
     );
 });
 
+const THUMB_MAX = 80;
+
 function PrototypeThumbnail({ proto }: { proto: Prototype }) {
     const src = (proto.props.imageSrc ?? proto.props.src) as string | undefined;
-    if (!src) return null;
-
     const gridCol = proto.props.gridCol as number | undefined;
     const gridRow = proto.props.gridRow as number | undefined;
     const gridNumWidth = proto.props.gridNumWidth as number | undefined;
     const gridNumHeight = proto.props.gridNumHeight as number | undefined;
     const hasGrid = gridCol != null && gridNumWidth != null && gridNumHeight != null;
 
-    if (hasGrid) {
-        const posX = gridNumWidth! <= 1 ? 0 : ((gridCol!) / (gridNumWidth! - 1)) * 100;
+    const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
+    useEffect(() => {
+        setNaturalSize(null);
+        if (!src) return;
+        const img = new Image();
+        img.onload = () => setNaturalSize({ w: img.naturalWidth, h: img.naturalHeight });
+        img.src = src;
+    }, [src]);
+
+    if (!src) return null;
+
+    if (hasGrid && naturalSize) {
+        const cellW = naturalSize.w / gridNumWidth!;
+        const cellH = naturalSize.h / gridNumHeight!;
+        const scale = Math.min(THUMB_MAX / cellW, THUMB_MAX / cellH, 1);
+        const dispW = Math.round(cellW * scale);
+        const dispH = Math.round(cellH * scale);
+        const posX = gridNumWidth! <= 1 ? 0 : (gridCol! / (gridNumWidth! - 1)) * 100;
         const posY = gridNumHeight! <= 1 ? 0 : ((gridRow ?? 0) / (gridNumHeight! - 1)) * 100;
         return (
             <div style={{
-                width: 40,
-                height: 40,
+                width: dispW,
+                height: dispH,
                 borderRadius: 4,
                 backgroundImage: `url(${src})`,
-                backgroundSize: `${gridNumWidth! * 100}% ${gridNumHeight! * 100}%`,
+                backgroundSize: `${naturalSize.w * scale}px ${naturalSize.h * scale}px`,
                 backgroundPosition: `${posX}% ${posY}%`,
                 flexShrink: 0,
             }} />
@@ -110,8 +126,8 @@ function PrototypeThumbnail({ proto }: { proto: Prototype }) {
         <img
             src={src}
             style={{
-                width: 40,
-                height: 40,
+                maxWidth: THUMB_MAX,
+                maxHeight: THUMB_MAX,
                 objectFit: 'contain',
                 borderRadius: 4,
                 flexShrink: 0,

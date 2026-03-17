@@ -6,8 +6,9 @@ import type { GridCrop } from "../../canvas/gridCrop";
 import { useCropProps, gridCropEqual } from "../../canvas/gridCrop";
 import useImage from "use-image";
 
-const DEFAULT_SIZE = 100;
-const DEFAULT_ASPECT = 1.5;
+const DEFAULT_WIDTH = 100;
+const DEFAULT_HEIGHT = 150;
+const MAX_SIDE = Math.max(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 const STACK_OFFSET = 2;
 const MAX_STACK_LINES = 4;
 
@@ -33,8 +34,26 @@ export const Deck = memo(function Deck({ id, x, y, cardCount, imageSrc, text, gr
     const cropProps = useCropProps(image, gridCrop);
 
     const stackLines = Math.min(cardCount, MAX_STACK_LINES);
-    const w = DEFAULT_SIZE;
-    const h = DEFAULT_SIZE * DEFAULT_ASPECT;
+    let w = DEFAULT_WIDTH;
+    let h = DEFAULT_HEIGHT;
+    if (image) {
+        let imgW = image.naturalWidth;
+        let imgH = image.naturalHeight;
+        if (gridCrop) {
+            imgW /= gridCrop.gridNumWidth;
+            imgH /= gridCrop.gridNumHeight;
+        }
+        if (imgW > 0 && imgH > 0) {
+            const aspect = imgW / imgH;
+            if (imgW >= imgH) {
+                w = MAX_SIDE;
+                h = MAX_SIDE / aspect;
+            } else {
+                h = MAX_SIDE;
+                w = MAX_SIDE * aspect;
+            }
+        }
+    }
 
     return <Group
         id={id}

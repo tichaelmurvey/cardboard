@@ -278,23 +278,14 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
         const backUrl = cleanUrl(obj.CustomImage?.ImageSecondaryURL ?? '');
         const key = imageUrl + '|' + backUrl;
         const name = obj.Nickname?.trim() || obj.Name || 'Token';
-        const isBoard = !!obj.CustomImage?.CustomTile;
-        const type: ObjectType = isBoard ? 'board' : obj.CardID != null ? 'card' : 'token';
+        const type: ObjectType = obj.CardID != null ? 'card' : 'token';
 
         if (!protoMap.has(key)) {
             const protoId = crypto.randomUUID();
-            const props: Record<string, unknown> = {};
-            if (isBoard) {
-                props.src = imageUrl;
-                props.name = name;
-                props.customSizing = true;
-            } else {
-                props.imageSrc = imageUrl;
-                props.name = name;
-                if (backUrl) {
-                    props.hasBack = true;
-                    props.backImageSrc = backUrl;
-                }
+            const props: Record<string, unknown> = { imageSrc: imageUrl, name };
+            if (backUrl) {
+                props.hasBack = true;
+                props.backImageSrc = backUrl;
             }
             protoMap.set(key, {
                 proto: { id: protoId, type, props },
@@ -316,23 +307,15 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
         }
 
         const scaleX = obj.Transform?.scaleX ?? 1;
-        const scaleZ = obj.Transform?.scaleZ ?? 1;
         const imgSize = sizeMap.get(imageUrl) ?? { width: 1, height: 1 };
         const imgW = imgSize.width || 1;
         const imgH = imgSize.height || 1;
 
-        if (obj.CustomImage?.CustomTile) {
-            const aspect = imgW / imgH;
-            instanceProps.customSizing = true;
-            instanceProps.sizeX = Math.round(CB_UNIT * aspect * scaleX);
-            instanceProps.sizeY = Math.round(CB_UNIT * scaleZ);
-        } else {
-            const ttsHeight = 2 * imgH / Math.sqrt(imgW * imgH) * scaleX;
-            const renderBase = BASE_RENDER[entry.proto.type] ?? 80;
-            const scale = CB_UNIT * ttsHeight / renderBase;
-            if (Math.abs(scale - 1) > 0.01) {
-                instanceProps.scale = Math.round(scale * 100) / 100;
-            }
+        const ttsHeight = 2 * imgH / Math.sqrt(imgW * imgH) * scaleX;
+        const renderBase = BASE_RENDER[entry.proto.type] ?? 80;
+        const cbScale = CB_UNIT * ttsHeight / renderBase;
+        if (Math.abs(cbScale - 1) > 0.01) {
+            instanceProps.scale = Math.round(cbScale * 100) / 100;
         }
 
         allInstances.push({

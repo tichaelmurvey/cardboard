@@ -32,14 +32,34 @@ export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, 
     const cropProps = useCropProps(image, gridCrop);
 
     const stackLines = Math.min(itemCount, MAX_STACK_LINES);
+    let w = DEFAULT_SIZE;
+    let h = DEFAULT_SIZE;
+    if (image) {
+        let imgW = image.naturalWidth;
+        let imgH = image.naturalHeight;
+        if (gridCrop) {
+            imgW /= gridCrop.gridNumWidth;
+            imgH /= gridCrop.gridNumHeight;
+        }
+        if (imgW > 0 && imgH > 0) {
+            const aspect = imgW / imgH;
+            if (imgW >= imgH) {
+                w = DEFAULT_SIZE;
+                h = DEFAULT_SIZE / aspect;
+            } else {
+                h = DEFAULT_SIZE;
+                w = DEFAULT_SIZE * aspect;
+            }
+        }
+    }
 
     return <Group
         id={id}
         name="stack"
         x={x}
         y={y}
-        offsetX={DEFAULT_SIZE / 2}
-        offsetY={DEFAULT_SIZE / 2}
+        offsetX={w / 2}
+        offsetY={h / 2}
         scaleX={scale}
         scaleY={scale}
         draggable
@@ -53,24 +73,24 @@ export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, 
                 key={`stack-${i}`}
                 x={(stackLines - i) * STACK_OFFSET}
                 y={(stackLines - i) * STACK_OFFSET}
-                width={DEFAULT_SIZE}
-                height={DEFAULT_SIZE}
+                width={w}
+                height={h}
                 fill={image ? "#ccc" : "white"}
                 stroke="#aaa"
                 strokeWidth={0.5}
             />
         ))}
         <Rect
-            width={DEFAULT_SIZE}
-            height={DEFAULT_SIZE}
+            width={w}
+            height={h}
             fill={!image ? "white" : undefined}
             shadowBlur={10}
         />
-        {image && <Image image={image} width={DEFAULT_SIZE} height={DEFAULT_SIZE} {...cropProps} />}
+        {image && <Image image={image} width={w} height={h} {...cropProps} />}
         {!image && text && (
             <Text
-                width={DEFAULT_SIZE}
-                height={DEFAULT_SIZE}
+                width={w}
+                height={h}
                 text={text}
                 fontSize={18}
                 fontFamily="Calibri"
@@ -81,8 +101,8 @@ export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, 
             />
         )}
         <Rect
-            width={DEFAULT_SIZE}
-            height={DEFAULT_SIZE}
+            width={w}
+            height={h}
             listening={false}
             {...(targeted ? TARGETED_STROKE : selected ? SELECTED_STROKE : hovered ? HOVER_STROKE : NO_STROKE)}
         />
