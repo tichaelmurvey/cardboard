@@ -344,9 +344,49 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
 
     allPrototypes.push(...[...protoMap.values()].map(e => e.proto));
 
+    // --- Deduplicate non-container prototypes with identical type + props ---
+    const containerTypes = new Set(['deck', 'stack']);
+    const propsKeyMap = new Map<string, string>(); // propsKey → canonical prototype id
+    const idRemap = new Map<string, string>();      // duplicate id → canonical id
+    const dedupedPrototypes: Prototype[] = [];
+
+    for (const proto of allPrototypes) {
+        if (containerTypes.has(proto.type)) {
+            dedupedPrototypes.push(proto);
+            continue;
+        }
+        const key = proto.type + '|' + JSON.stringify(proto.props, Object.keys(proto.props).sort());
+        const existing = propsKeyMap.get(key);
+        if (existing) {
+            idRemap.set(proto.id, existing);
+        } else {
+            propsKeyMap.set(key, proto.id);
+            dedupedPrototypes.push(proto);
+        }
+    }
+
+    if (idRemap.size > 0) {
+        for (const inst of allInstances) {
+            inst.prototypeId = idRemap.get(inst.prototypeId) ?? inst.prototypeId;
+            // Remap references inside container entries (deck cards / stack items)
+            const cards = inst.props?.cards as { prototypeId: string }[] | undefined;
+            if (cards) {
+                for (const entry of cards) {
+                    entry.prototypeId = idRemap.get(entry.prototypeId) ?? entry.prototypeId;
+                }
+            }
+            const items = inst.props?.items as { prototypeId: string }[] | undefined;
+            if (items) {
+                for (const entry of items) {
+                    entry.prototypeId = idRemap.get(entry.prototypeId) ?? entry.prototypeId;
+                }
+            }
+        }
+    }
+
     return {
         version: 1,
-        prototypes: allPrototypes,
+        prototypes: dedupedPrototypes,
         instances: allInstances,
         players: [],
         hiddenRegions: [],
