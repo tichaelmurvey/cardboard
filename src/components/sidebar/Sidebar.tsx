@@ -1,11 +1,12 @@
 import { memo } from 'react';
 import { Drawer, Button, Stack, Divider, Text as MantineText, Badge, UnstyledButton, Group as MantineGroup, ActionIcon, SegmentedControl } from '@mantine/core';
-import type { Prototype, CanvasState, Player } from '../../state_management/types';
+import type { Prototype, Player } from '../../state_management/types';
 
 interface SidebarProps {
     opened: boolean;
     onClose: () => void;
-    state: CanvasState;
+    prototypes: Prototype[];
+    players: Player[];
     onSave: () => void;
     onLoad: () => void;
     onSpawn: (prototypeId: string, e: React.MouseEvent) => void;
@@ -23,59 +24,63 @@ interface SidebarProps {
     onEditModeChange: (editMode: boolean) => void;
 }
 
-export const Sidebar = memo(function Sidebar({ opened, onClose, state, onSave, onLoad, onSpawn, onEditPrototype, onDeletePrototype, onNewPrototype, onAddPlayer, onDeletePlayer, onAddHiddenRegion, onLoadTTS, onImportTTS, isHost, hostPlayerId, editMode, onEditModeChange }: SidebarProps) {
+export const Sidebar = memo(function Sidebar({ opened, onClose, prototypes, players, onSave, onLoad, onSpawn, onEditPrototype, onDeletePrototype, onNewPrototype, onAddPlayer, onDeletePlayer, onAddHiddenRegion, onLoadTTS, onImportTTS, isHost, hostPlayerId, editMode, onEditModeChange }: SidebarProps) {
     return (
         <Drawer position='right' opened={opened} onClose={onClose} trapFocus={false} closeOnClickOutside={false} withOverlay={false}>
-            <h2 style={{
-                fontFamily: 'Sheandy',
-                fontWeight: 'normal',
-                margin: 0,
-                textAlign: "center",
-                fontSize: "5rem",
-                color: "sienna"
-            }}>Cardboard</h2>
-            <Stack h="100%" justify='space-between'>
-                <Stack>
-                    <Button onClick={onSave}>Save</Button>
-                    <Button onClick={onLoad}>Load</Button>
-                    {editMode && <Button onClick={onLoadTTS}>Load TTS Save</Button>}
-                    {editMode && <Button onClick={onImportTTS}>Import from TTS/Dextrous</Button>}
-                    {editMode && (
-                        <>
-                            <Divider label="Prototypes" />
-                            <Button variant="light" size="xs" onClick={onNewPrototype}>+ New Prototype</Button>
-                            {state.prototypes.map(proto => (
-                                <PrototypeEntry key={proto.id} proto={proto} onSpawn={onSpawn} onEdit={onEditPrototype} onDelete={onDeletePrototype} />
+            {opened && (
+                <>
+                    <h2 style={{
+                        fontFamily: 'Sheandy',
+                        fontWeight: 'normal',
+                        margin: 0,
+                        textAlign: "center",
+                        fontSize: "5rem",
+                        color: "sienna"
+                    }}>Cardboard</h2>
+                    <Stack h="100%" justify='space-between'>
+                        <Stack>
+                            <Button onClick={onSave}>Save</Button>
+                            <Button onClick={onLoad}>Load</Button>
+                            {editMode && <Button onClick={onLoadTTS}>Load TTS Save</Button>}
+                            {editMode && <Button onClick={onImportTTS}>Import from TTS/Dextrous</Button>}
+                            {editMode && (
+                                <>
+                                    <Divider label="Prototypes" />
+                                    <Button variant="light" size="xs" onClick={onNewPrototype}>+ New Prototype</Button>
+                                    {prototypes.map(proto => (
+                                        <PrototypeEntry key={proto.id} proto={proto} onSpawn={onSpawn} onEdit={onEditPrototype} onDelete={onDeletePrototype} />
+                                    ))}
+                                </>
+                            )}
+                            <Divider label="Players" />
+                            {players.map(player => (
+                                <PlayerEntry key={player.id} player={player} isHost={player.id === hostPlayerId} onDelete={editMode ? onDeletePlayer : undefined} onAddHiddenRegion={isHost && editMode ? onAddHiddenRegion : undefined} />
                             ))}
-                        </>
-                    )}
-                    <Divider label="Players" />
-                    {state.players.map(player => (
-                        <PlayerEntry key={player.id} player={player} isHost={player.id === hostPlayerId} onDelete={editMode ? onDeletePlayer : undefined} onAddHiddenRegion={isHost && editMode ? onAddHiddenRegion : undefined} />
-                    ))}
-                    {editMode && <Button variant="light" size="xs" onClick={onAddPlayer}>+ Add Player</Button>}
-                </Stack>
-                {isHost && (
-                    <Stack>
-                        <Divider />
-                        <MantineText size="xs" c="dimmed" ta="center">You are the host</MantineText>
-                        <SegmentedControl
-                            value={editMode ? 'edit' : 'play'}
-                            onChange={(v) => onEditModeChange(v === 'edit')}
-                            data={[
-                                { label: 'Edit', value: 'edit' },
-                                { label: 'Play', value: 'play' },
-                            ]}
-                            fullWidth
-                        />
+                            {editMode && <Button variant="light" size="xs" onClick={onAddPlayer}>+ Add Player</Button>}
+                        </Stack>
+                        {isHost && (
+                            <Stack>
+                                <Divider />
+                                <MantineText size="xs" c="dimmed" ta="center">You are the host</MantineText>
+                                <SegmentedControl
+                                    value={editMode ? 'edit' : 'play'}
+                                    onChange={(v) => onEditModeChange(v === 'edit')}
+                                    data={[
+                                        { label: 'Edit', value: 'edit' },
+                                        { label: 'Play', value: 'play' },
+                                    ]}
+                                    fullWidth
+                                />
+                            </Stack>
+                        )}
                     </Stack>
-                )}
-            </Stack>
+                </>
+            )}
         </Drawer>
     );
 });
 
-function PrototypeEntry({ proto, onSpawn, onEdit, onDelete }: { proto: Prototype; onSpawn: (id: string, e: React.MouseEvent) => void; onEdit: (id: string) => void; onDelete: (id: string) => void }) {
+const PrototypeEntry = memo(function PrototypeEntry({ proto, onSpawn, onEdit, onDelete }: { proto: Prototype; onSpawn: (id: string, e: React.MouseEvent) => void; onEdit: (id: string) => void; onDelete: (id: string) => void }) {
     return (
         <MantineGroup gap="xs" wrap="nowrap">
             <UnstyledButton
@@ -100,9 +105,9 @@ function PrototypeEntry({ proto, onSpawn, onEdit, onDelete }: { proto: Prototype
             </ActionIcon>
         </MantineGroup>
     );
-}
+});
 
-function PlayerEntry({ player, isHost, onDelete, onAddHiddenRegion }: { player: Player; isHost: boolean; onDelete?: (id: string) => void; onAddHiddenRegion?: (playerId: string) => void }) {
+const PlayerEntry = memo(function PlayerEntry({ player, isHost, onDelete, onAddHiddenRegion }: { player: Player; isHost: boolean; onDelete?: (id: string) => void; onAddHiddenRegion?: (playerId: string) => void }) {
     return (
         <MantineGroup gap="sm" wrap="nowrap">
             <div style={{
@@ -125,4 +130,4 @@ function PlayerEntry({ player, isHost, onDelete, onAddHiddenRegion }: { player: 
             )}
         </MantineGroup>
     );
-}
+});

@@ -202,7 +202,7 @@ export default function App() {
         zoomSyncTimer.current = setTimeout(syncStageTransform, 150);
     }
 
-    function screenToStage(screenX: number, screenY: number) {
+    const screenToStage = useCallback((screenX: number, screenY: number) => {
         const stage = stageRef.current!;
         const scale = stage.scaleX();
         const pos = stage.position();
@@ -210,7 +210,7 @@ export default function App() {
             x: (screenX - pos.x) / scale,
             y: (screenY - pos.y) / scale,
         };
-    }
+    }, []);
 
     // --- Clipboard ---
 
@@ -243,9 +243,9 @@ export default function App() {
         'w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
         '+', '=', '-', '_',
     ]), []);
-    const stateRef = useRef({ stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId: hoveredId.current, state });
+    const stateRef = useRef({ stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId: hoveredId.current, state, prototypeMap });
     useEffect(() => {
-        stateRef.current = { stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId: hoveredId.current, state };
+        stateRef.current = { stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId: hoveredId.current, state, prototypeMap };
     });
 
     useEffect(() => {
@@ -416,7 +416,7 @@ export default function App() {
         }));
     }, []);
 
-    function spawnInstance(prototypeId: string, e: React.MouseEvent) {
+    const spawnInstance = useCallback((prototypeId: string, e: React.MouseEvent) => {
         const id = crypto.randomUUID();
         const stage = layerRef.current?.getStage();
         const pointer = stage?.getPointerPosition() ?? { x: e.clientX, y: e.clientY };
@@ -428,7 +428,7 @@ export default function App() {
         }));
 
         pendingDragId.current = id;
-    }
+    }, [screenToStage]);
 
     useEffect(() => {
         if (!pendingDragId.current || !layerRef.current) return;
@@ -816,24 +816,7 @@ export default function App() {
         };
     }, [contextMenu]);
 
-    function updateTooltip(id: string, evt: MouseEvent) {
-        if (!id) { setTooltip(null); return; }
-        const inst = state.instances.find(i => i.id === id);
-        if (!inst) { setTooltip(null); return; }
-        const proto = prototypeMap.get(inst.prototypeId);
-        if (!proto) { setTooltip(null); return; }
-        if (proto.type === 'deck') {
-            const count = ((inst.props?.cards as unknown[]) ?? []).length;
-            setTooltip({
-                x: evt.clientX, y: evt.clientY, text: `[${count}]\n[space] to draw` });
-        } else if (proto.type === 'stack') {
-            const count = ((inst.props?.items as unknown[]) ?? []).length;
-            setTooltip({
-                x: evt.clientX, y: evt.clientY, text: `[${count}]\n[space] to draw` });
-        } else {
-            setTooltip(null);
-        }
-    }
+
 
     function getContextMenuNames(): { heading?: string; subheading?: string } {
         if (!contextMenu?.instanceId) return {};
@@ -988,12 +971,12 @@ export default function App() {
         return updates;
     }
 
-    function openProtoEditor(protoId: string) {
-        const proto = prototypeMap.get(protoId);
+    const openProtoEditor = useCallback((protoId: string) => {
+        const proto = stateRef.current.prototypeMap.get(protoId);
         if (!proto) return;
         setProtoDraft({ ...draftFromProps(proto.props), type: proto.type });
         setEditingProtoId(protoId);
-    }
+    }, []);
 
     function saveProtoEdits() {
         if (!editingProto) return;
@@ -1055,15 +1038,17 @@ export default function App() {
     // --- Players ---
 
 
-    function addPlayer() {
-        const usedColors = new Set(state.players.map(p => p.color));
-        const color = PLAYER_COLORS.find(c => !usedColors.has(c)) ?? `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
-        const name = `Player ${state.players.length + 1}`;
-        setState(prev => ({
-            ...prev,
-            players: [...prev.players, { id: crypto.randomUUID(), color, name }],
-        }));
-    }
+    const addPlayer = useCallback(() => {
+        setState(prev => {
+            const usedColors = new Set(prev.players.map(p => p.color));
+            const color = PLAYER_COLORS.find(c => !usedColors.has(c)) ?? `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
+            const name = `Player ${prev.players.length + 1}`;
+            return {
+                ...prev,
+                players: [...prev.players, { id: crypto.randomUUID(), color, name }],
+            };
+        });
+    }, []);
 
     function createPrototype(type: import('./state_management/types').ObjectType, text: string, scale: number, imageSrc: string) {
         const props: Record<string, unknown> = { text };
@@ -1075,29 +1060,30 @@ export default function App() {
         }));
     }
 
-    function deletePrototype(id: string) {
+    const deletePrototype = useCallback((id: string) => {
         setState(prev => ({
             ...prev,
             prototypes: prev.prototypes.filter(p => p.id !== id),
             instances: prev.instances.filter(i => i.prototypeId !== id),
         }));
-    }
+    }, []);
 
-    function deletePlayer(id: string) {
+    const deletePlayer = useCallback((id: string) => {
         setState(prev => ({
             ...prev,
             players: prev.players.filter(p => p.id !== id),
         }));
-    }
+    }, []);
 
     // --- Hidden Regions ---
 
-    function addHiddenRegion(playerId: string) {
+    const addHiddenRegion = useCallback((playerId: string) => {
+        const { stagePos: sp, stageScale: sc } = stateRef.current;
         const region = {
             id: crypto.randomUUID(),
             playerId,
-            x: -stagePos.x / stageScale + 100,
-            y: -stagePos.y / stageScale + 100,
+            x: -sp.x / sc + 100,
+            y: -sp.y / sc + 100,
             width: 200,
             height: 200,
         };
@@ -1105,7 +1091,7 @@ export default function App() {
             ...prev,
             hiddenRegions: [...(prev.hiddenRegions ?? []), region],
         }));
-    }
+    }, []);
 
     function updateRegionPosition(id: string, x: number, y: number) {
         setState(prev => ({
@@ -1170,14 +1156,17 @@ export default function App() {
 
     // --- Persistence ---
 
-    async function handleLoad() {
+    const handleSave = useCallback(() => downloadJson(stateRef.current.state), []);
+    const handleNewPrototype = useCallback(() => setNewProtoOpen(true), []);
+
+    const handleLoad = useCallback(async () => {
         try {
             const loaded = await uploadJson();
             setState(loaded);
         } catch {
             // user cancelled or invalid file
         }
-    }
+    }, []);
 
     function pickTTSFile(onResult: (imported: CanvasState) => void) {
         const input = document.createElement('input');
@@ -1198,11 +1187,11 @@ export default function App() {
         input.click();
     }
 
-    function handleLoadTTS() {
+    const handleLoadTTS = useCallback(() => {
         pickTTSFile((imported) => setState(imported));
-    }
+    }, []);
 
-    function handleImportTTS() {
+    const handleImportTTS = useCallback(() => {
         pickTTSFile((imported) => {
             setState(prev => ({
                 ...prev,
@@ -1210,7 +1199,53 @@ export default function App() {
                 instances: [...prev.instances, ...imported.instances],
             }));
         });
-    }
+    }, []);
+
+    const handleLayerMouseEnter = useCallback((e: import('konva/lib/Node').KonvaEventObject<MouseEvent>) => {
+        if (isPanning.current || isSelecting.current) return;
+        const id = getGroupId(e);
+        const { state: s, prototypeMap: pm } = stateRef.current;
+        const inst = s.instances.find(i => i.id === id);
+        const locked = !!(inst?.props?.locked);
+        if (id && !locked) hoveredId.current = id;
+        if (!id || !inst) { setTooltip(null); return; }
+        const proto = pm.get(inst.prototypeId);
+        if (!proto) { setTooltip(null); return; }
+        if (proto.type === 'deck') {
+            const count = ((inst.props?.cards as unknown[]) ?? []).length;
+            setTooltip({ x: e.evt.clientX, y: e.evt.clientY, text: `[${count}]\n[space] to draw` });
+        } else if (proto.type === 'stack') {
+            const count = ((inst.props?.items as unknown[]) ?? []).length;
+            setTooltip({ x: e.evt.clientX, y: e.evt.clientY, text: `[${count}]\n[space] to draw` });
+        } else {
+            setTooltip(null);
+        }
+    }, []);
+
+    const handleLayerMouseLeave = useCallback(() => {
+        if (isPanning.current || isSelecting.current) return;
+        hoveredId.current = null;
+        setTooltip(null);
+    }, []);
+
+    const handleLayerClick = useCallback((e: import('konva/lib/Node').KonvaEventObject<MouseEvent>) => {
+        const id = getGroupId(e);
+        const { state: s } = stateRef.current;
+        const inst = s.instances.find(i => i.id === id);
+        const locked = !!(inst?.props?.locked);
+        if (!id || locked) return;
+        const evt = e.evt as MouseEvent;
+        if (evt.shiftKey) {
+            setSelectedIds(prev => {
+                const next = new Set(prev);
+                if (next.has(id)) next.delete(id);
+                else next.add(id);
+                return next;
+            });
+        } else {
+            setSelectedIds(new Set([id]));
+        }
+    }, []);
 
     // --- Render ---
 
@@ -1219,13 +1254,14 @@ export default function App() {
             <Sidebar
                 opened={opened}
                 onClose={close}
-                state={state}
-                onSave={() => downloadJson(state)}
+                prototypes={state.prototypes}
+                players={state.players}
+                onSave={handleSave}
                 onLoad={handleLoad}
                 onSpawn={spawnInstance}
                 onEditPrototype={openProtoEditor}
                 onDeletePrototype={deletePrototype}
-                onNewPrototype={() => setNewProtoOpen(true)}
+                onNewPrototype={handleNewPrototype}
                 onAddPlayer={addPlayer}
                 onDeletePlayer={deletePlayer}
                 onAddHiddenRegion={addHiddenRegion}
@@ -1270,32 +1306,9 @@ export default function App() {
                         />}
                     </Layer>
                     <Layer ref={layerRef} onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}
-                        onMouseEnter={(e) => {
-                            if (isPanning.current || isSelecting.current) return;
-                            const id = getGroupId(e);
-                            if (id && !isLocked(id)) hoveredId.current = id;
-                            updateTooltip(id, e.evt);
-                        }}
-                        onMouseLeave={() => {
-                            if (isPanning.current || isSelecting.current) return;
-                            hoveredId.current = null;
-                            setTooltip(null);
-                        }}
-                        onClick={(e) => {
-                            const id = getGroupId(e);
-                            if (!id || isLocked(id)) return;
-                            const evt = e.evt as MouseEvent;
-                            if (evt.shiftKey) {
-                                setSelectedIds(prev => {
-                                    const next = new Set(prev);
-                                    if (next.has(id)) next.delete(id);
-                                    else next.add(id);
-                                    return next;
-                                });
-                            } else {
-                                setSelectedIds(new Set([id]));
-                            }
-                        }}>
+                        onMouseEnter={handleLayerMouseEnter}
+                        onMouseLeave={handleLayerMouseLeave}
+                        onClick={handleLayerClick}>
                         {state.instances.map(inst => {
                             if (hiddenInstanceIds.has(inst.id)) return null;
                             const proto = prototypeMap.get(inst.prototypeId);
@@ -1352,33 +1365,42 @@ export default function App() {
                     whiteSpace: 'pre',
                 }}><span>{tooltip.text}</span></div>
             )}
-            <EditorModal
-                opened={!!editingProto}
+            {editingProto && <EditorModal
+                opened
                 onClose={() => setEditingProtoId(null)}
                 title="Edit Prototype"
                 draft={protoDraft}
                 onDraftChange={setProtoDraft}
                 onSave={saveProtoEdits}
-                protoType={editingProto?.type}
-            />
-            <EditorModal
-                opened={!!editingInst}
+                protoType={editingProto.type}
+            />}
+            {editingInst && <EditorModal
+                opened
                 onClose={() => setEditingInstId(null)}
                 title="Edit Instance"
                 draft={instDraft}
                 onDraftChange={setInstDraft}
                 onSave={saveInstEdits}
                 placeholders={getInstPlaceholders()}
-                protoType={editingInst ? prototypeMap.get(editingInst.prototypeId)?.type : undefined}
+                protoType={prototypeMap.get(editingInst.prototypeId)?.type}
                 isInstance
-                onEditPrototype={editingInst ? () => {
+                onEditPrototype={() => {
                     const protoId = editingInst.prototypeId;
                     setEditingInstId(null);
                     openProtoEditor(protoId);
-                } : undefined}
-            />
+                }}
+                onResetToPrototype={() => {
+                    setState(prev => ({
+                        ...prev,
+                        instances: prev.instances.map(i =>
+                            i.id === editingInstId ? { ...i, props: undefined } : i
+                        ),
+                    }));
+                    setEditingInstId(null);
+                }}
+            />}
             <JoinModal opened={!assignedPlayerId} onJoin={claimPlayer} />
-            <NewProtoModal opened={newProtoOpen} onClose={() => setNewProtoOpen(false)} onCreate={createPrototype} />
+            {newProtoOpen && <NewProtoModal opened onClose={() => setNewProtoOpen(false)} onCreate={createPrototype} />}
         </>
     );
 }

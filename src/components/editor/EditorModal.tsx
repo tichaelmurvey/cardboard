@@ -46,9 +46,11 @@ interface EditorModalProps {
     isInstance?: boolean;
     /** Callback to open the prototype editor (instance editor only). */
     onEditPrototype?: () => void;
+    /** Callback to reset instance props to prototype defaults. */
+    onResetToPrototype?: () => void;
 }
 
-export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSave, placeholders, protoType, isInstance, onEditPrototype }: EditorModalProps) {
+export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSave, placeholders, protoType, isInstance, onEditPrototype, onResetToPrototype }: EditorModalProps) {
     const ov = (field?: string) => placeholders && field ? ' (override)' : '';
     const effectiveType = draft.type ?? protoType;
 
@@ -153,6 +155,7 @@ export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSa
                         </>
                     )}
                     <Button onClick={onSave}>Save</Button>
+                    {onResetToPrototype && <Button variant="light" color="orange" onClick={onResetToPrototype}>Reset to Prototype</Button>}
                     {onEditPrototype && <Button variant="light" onClick={onEditPrototype}>Edit Prototype</Button>}
                 </Stack>
             )}

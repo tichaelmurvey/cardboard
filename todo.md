@@ -1,15 +1,11 @@
 ONGOING
-dextrous imports
 
 NEXT
-additive load
 Add ctrl z
-prototype only load
-make zoom, pan, drag more efficient with high numbers
 prototype folders
+prototype images
 
 LATER
-draw key tooltip hint
 token shape property
 highlight shape for tokens e.g. square tokens
 Reset to prototype option
