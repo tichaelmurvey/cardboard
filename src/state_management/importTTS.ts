@@ -35,7 +35,9 @@ interface TTSCustomImage {
 
 interface TTSCustomDeckEntry {
     FaceUrl?: string;
+    FaceURL?: string;
     BackUrl?: string;
+    BackURL?: string;
     NumWidth?: number;
     NumHeight?: number;
     BackIsHidden?: boolean;
@@ -100,9 +102,9 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
             const deckEntry = customDeck[deckKey];
             if (!deckEntry) continue;
 
-            const faceUrl = cleanUrl(deckEntry.FaceUrl ?? '');
+            const faceUrl = cleanUrl(deckEntry.FaceURL ?? deckEntry.FaceUrl ?? '');
             if (!faceUrl) continue;
-            const backUrl = cleanUrl(deckEntry.BackUrl ?? '');
+            const backUrl = cleanUrl(deckEntry.BackURL ?? deckEntry.BackUrl ?? '');
             const numW = deckEntry.NumWidth ?? 1;
             const numH = deckEntry.NumHeight ?? 1;
             const col = cardIndex % numW;
