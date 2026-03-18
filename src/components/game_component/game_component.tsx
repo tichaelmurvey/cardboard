@@ -104,7 +104,6 @@ export function GameComponent({
                 width={width}
                 height={height}
                 fill={fill}
-                shadowBlur={10}
             />
             {renderImage && (
                 <Image

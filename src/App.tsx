@@ -44,6 +44,7 @@ export default function App() {
     const [marqueeHitIds, setMarqueeHitIds] = useState<Set<string> | null>(null);
     const isSelecting = useRef(false);
     const dragStartPos = useRef<Map<string, { x: number; y: number }>>(new Map());
+    const dragNodeRefs = useRef<Map<string, Konva.Node>>(new Map());
     const hoveredId = useRef<string | null>(null);
     const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number; instanceId: string | null } | null>(null);
@@ -461,20 +462,25 @@ export default function App() {
 
         if (selectedIds.has(draggedId) && layerRef.current) {
             const starts = new Map<string, { x: number; y: number }>();
+            const refs = new Map<string, Konva.Node>();
             starts.set(draggedId, { x: e.target.x(), y: e.target.y() });
+            refs.set(draggedId, e.target);
             for (const id of selectedIds) {
                 if (id === draggedId) continue;
                 const node = layerRef.current.findOne(`#${id}`);
                 if (node) {
                     node.opacity(0.7);
                     starts.set(id, { x: node.x(), y: node.y() });
+                    refs.set(id, node);
                     // Move selected nodes to drag layer too
                     if (dragLayerRef.current) node.moveTo(dragLayerRef.current);
                 }
             }
             dragStartPos.current = starts;
+            dragNodeRefs.current = refs;
         } else {
             dragStartPos.current = new Map();
+            dragNodeRefs.current = new Map();
         }
     }
 
@@ -489,14 +495,14 @@ export default function App() {
             }
         }
 
-        if (dragStartPos.current.size <= 1 || !dragLayerRef.current) return;
+        if (dragStartPos.current.size <= 1) return;
         const startPos = dragStartPos.current.get(draggedId);
         if (!startPos) return;
         const dx = e.target.x() - startPos.x;
         const dy = e.target.y() - startPos.y;
         for (const [id, pos] of dragStartPos.current) {
             if (id === draggedId) continue;
-            const node = dragLayerRef.current.findOne(`#${id}`);
+            const node = dragNodeRefs.current.get(id);
             if (node) {
                 node.x(pos.x + dx);
                 node.y(pos.y + dy);
@@ -525,16 +531,15 @@ export default function App() {
                     return { ...prev, instances: next };
                 });
                 // Restore opacity on secondary nodes (still on drag layer)
-                if (dragLayerRef.current) {
-                    for (const [id] of dragStartPos.current) {
-                        if (id === draggedId) continue;
-                        const node = dragLayerRef.current.findOne(`#${id}`);
-                        if (node) node.opacity(1);
-                    }
+                for (const [id] of dragStartPos.current) {
+                    if (id === draggedId) continue;
+                    const node = dragNodeRefs.current.get(id);
+                    if (node) node.opacity(1);
                 }
             }
         }
         dragStartPos.current = new Map();
+        dragNodeRefs.current = new Map();
 
         tryMerge(draggedId);
 
