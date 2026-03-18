@@ -569,8 +569,12 @@ export default function App() {
         if (!draggedNode) return null;
         const draggedRect = draggedNode.getClientRect();
 
-        for (const targetInst of state.instances.values()) {
-            if (targetInst.id === draggedId) continue;
+        // Iterate layer children directly instead of per-instance findOne() lookups
+        for (const targetNode of layerRef.current.getChildren()) {
+            const targetId = targetNode.id();
+            if (!targetId || targetId === draggedId) continue;
+            const targetInst = state.instances.get(targetId);
+            if (!targetInst) continue;
             const targetProto = prototypeMap.get(targetInst.prototypeId);
             if (!targetProto) continue;
             // Card merges: card→card, card→deck
@@ -581,9 +585,7 @@ export default function App() {
             if (draggedProto.type === "token" && targetProto.type !== "token" && targetProto.type !== "stack") continue;
             // Stack merges: stack→stack only
             if (draggedProto.type === "stack" && targetProto.type !== "stack") continue;
-            const targetNode = layerRef.current!.findOne(`#${targetInst.id}`);
-            if (!targetNode) continue;
-            if (rectsOverlap50(draggedRect, targetNode.getClientRect())) return targetInst.id;
+            if (rectsOverlap50(draggedRect, targetNode.getClientRect())) return targetId;
         }
         return null;
     }
