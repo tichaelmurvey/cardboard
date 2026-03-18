@@ -1,4 +1,5 @@
 import type { CanvasState } from "./types";
+import { instancesToMap } from "./types";
 import order_board from "../assets/boards/Order board.png";
 import lunecastleSrc from "../assets/tokens/lunecastle.png";
 
@@ -15,11 +16,11 @@ export const DEFAULT_STATE: CanvasState = {
         { id: deckId, type: "deck", props: { text: "Deck" } },
         { id: tokenId, type: "token", props: { imageSrc: lunecastleSrc, text: "This is a token with quite a bit of text" } },
     ],
-    instances: [
+    instances: instancesToMap([
         { id: crypto.randomUUID(), prototypeId: boardId, x: 0, y: 0 },
         { id: crypto.randomUUID(), prototypeId: cardId, x: 0, y: 0 },
         { id: crypto.randomUUID(), prototypeId: tokenId, x: 0, y: 0 },
-    ],
+    ]),
     players: [
         { id: crypto.randomUUID(), color: '#e03131', name: 'Red' },
         { id: crypto.randomUUID(), color: '#1971c2', name: 'Blue' },

@@ -1,7 +1,8 @@
 import type { CanvasState } from "./types";
+import { instancesToArray, instancesToMap } from "./types";
 
 export function serialize(state: CanvasState): string {
-    return JSON.stringify(state, null, 2);
+    return JSON.stringify({ ...state, instances: instancesToArray(state.instances) }, null, 2);
 }
 
 export function deserialize(json: string): CanvasState {
@@ -9,7 +10,7 @@ export function deserialize(json: string): CanvasState {
     if (parsed.version !== 1) throw new Error(`Unknown version: ${parsed.version}`);
     if (!Array.isArray(parsed.prototypes)) throw new Error("Invalid state: missing prototypes array");
     if (!Array.isArray(parsed.instances)) throw new Error("Invalid state: missing instances array");
-    return parsed as CanvasState;
+    return { ...parsed, instances: instancesToMap(parsed.instances) } as CanvasState;
 }
 
 export function downloadJson(state: CanvasState, filename = "cardboard-save.json") {

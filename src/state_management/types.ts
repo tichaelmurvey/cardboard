@@ -35,10 +35,22 @@ export interface HiddenRegion {
 export interface CanvasState {
     version: 1;
     prototypes: Prototype[];
-    instances: Instance[];
+    instances: Map<string, Instance>;
     players: Player[];
     hiddenRegions: HiddenRegion[];
     hostClientId?: string;
+}
+
+/** Convert an Instance array to a Map keyed by id. */
+export function instancesToMap(instances: Instance[]): Map<string, Instance> {
+    const map = new Map<string, Instance>();
+    for (const inst of instances) map.set(inst.id, inst);
+    return map;
+}
+
+/** Convert an Instance Map back to an array (for serialization). */
+export function instancesToArray(instances: Map<string, Instance>): Instance[] {
+    return [...instances.values()];
 }
 
 /** Resolve an instance's effective props by merging prototype defaults with instance overrides. */

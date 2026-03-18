@@ -1,4 +1,5 @@
 import type { CanvasState, Prototype, Instance, ObjectType } from './types';
+import { instancesToMap } from './types';
 
 const POS_SCALE = 30;
 // Cardboard pixels per TTS_BASE unit. Single tuning constant for all sizing.
@@ -372,7 +373,7 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
     return {
         version: 1,
         prototypes: dedupedPrototypes,
-        instances: allInstances,
+        instances: instancesToMap(allInstances),
         players: [],
         hiddenRegions: [],
     };

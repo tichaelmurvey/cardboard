@@ -6,6 +6,7 @@ Add grid image row/cell to editable properties
 prototype images
 
 LATER
+Delay tooltip popup
 Add ctrl z
 token shape property
 loading popup for imports

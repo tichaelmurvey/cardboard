@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import type { CanvasState } from '../state_management/types';
+import { instancesToArray, instancesToMap } from '../state_management/types';
 import { getClientId } from './clientId';
 import { SERVER_URL } from './config';
 
@@ -32,18 +33,25 @@ export function useMultiplayer(
             // Give the server a moment to send existing state; if none arrives, push ours
             setTimeout(() => {
                 if (!receivedInitialState) {
-                    socket.emit('state:update', stateRef.current);
+                    socket.emit('state:update', { ...stateRef.current, instances: instancesToArray(stateRef.current.instances) });
                 }
             }, 500);
         });
 
-        socket.on('state:full', (serverState: CanvasState) => {
+        socket.on('state:full', (serverState: CanvasState & { instances: unknown }) => {
+            // Server sends instances as an array (JSON); convert to Map
+            const hydrated: CanvasState = {
+                ...serverState,
+                instances: Array.isArray(serverState.instances)
+                    ? instancesToMap(serverState.instances as import('../state_management/types').Instance[])
+                    : serverState.instances as Map<string, import('../state_management/types').Instance>,
+            };
             receivedInitialState = true;
-            receivedStateRef.current = serverState;
-            setState(serverState);
+            receivedStateRef.current = hydrated;
+            setState(hydrated);
 
             // Check if we're already claimed in the received state
-            const claimed = serverState.players.find(p => p.claimedBy === clientId);
+            const claimed = hydrated.players.find(p => p.claimedBy === clientId);
             if (claimed) setAssignedPlayerId(claimed.id);
         });
 
@@ -66,6 +74,9 @@ export function useMultiplayer(
         const socket = socketRef.current;
         if (!socket?.connected) return;
 
+        // Convert Map to array for JSON serialization over the wire
+        const wire = { ...newState, instances: instancesToArray(newState.instances) };
+
         const now = Date.now();
         const elapsed = now - lastSentRef.current;
 
@@ -75,11 +86,11 @@ export function useMultiplayer(
         }
 
         if (elapsed >= THROTTLE_MS) {
-            socket.emit('state:update', newState);
+            socket.emit('state:update', wire);
             lastSentRef.current = now;
         } else {
             pendingRef.current = setTimeout(() => {
-                socket.emit('state:update', newState);
+                socket.emit('state:update', wire);
                 lastSentRef.current = Date.now();
                 pendingRef.current = null;
             }, THROTTLE_MS - elapsed);
