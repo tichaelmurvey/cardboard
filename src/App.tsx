@@ -175,7 +175,16 @@ export default function App() {
         };
     }
 
+    function disableHitGraph() {
+        if (layerRef.current) layerRef.current.hitGraphEnabled(false);
+    }
+
+    function enableHitGraph() {
+        if (layerRef.current) layerRef.current.hitGraphEnabled(true);
+    }
+
     function syncStageTransform() {
+        enableHitGraph();
         const stage = stageRef.current;
         if (!stage) return;
         setStageScale(stage.scaleX());
@@ -200,6 +209,7 @@ export default function App() {
 
     function handleWheel(e: KonvaEventObject<WheelEvent>) {
         e.evt.preventDefault();
+        disableHitGraph();
         const stage = e.target.getStage()!;
         const pointer = stage.getPointerPosition()!;
         const direction = e.evt.deltaY > 0 ? -1 : 1;
@@ -302,13 +312,17 @@ export default function App() {
         }
 
         function startLoop() {
-            if (!animRef.current) animRef.current = requestAnimationFrame(tick);
+            if (!animRef.current) {
+                if (layerRef.current) layerRef.current.hitGraphEnabled(false);
+                animRef.current = requestAnimationFrame(tick);
+            }
         }
 
         function stopLoop() {
             if (animRef.current) {
                 cancelAnimationFrame(animRef.current);
                 animRef.current = 0;
+                if (layerRef.current) layerRef.current.hitGraphEnabled(true);
                 syncStageTransform();
             }
         }
@@ -764,6 +778,7 @@ export default function App() {
             evt.preventDefault();
             isPanning.current = true;
             panStart.current = { x: evt.clientX - stagePos.x, y: evt.clientY - stagePos.y };
+            disableHitGraph();
             return;
         }
         if (evt.button !== 0) return;
