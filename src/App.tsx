@@ -8,13 +8,14 @@ import { DEFAULT_STATE } from './state_management/defaults';
 import { downloadJson, uploadJson } from './state_management/persistence';
 import { convertTTSSave } from './state_management/importTTS';
 import type { CanvasState, Instance, Prototype } from './state_management/types';
-import { resolveProps, instancesToMap } from './state_management/types';
-import { rectsOverlap50, rectsIntersect } from './utils/geometry';
+import { resolveProps } from './state_management/types';
+import { rectsIntersect } from './utils/geometry';
 import type { Rect2D } from './utils/geometry';
 import { renderInstance, getZOrder, getGroupId } from './canvas/renderInstance';
+import { BG_SIZE, ZOOM_FACTOR, MIN_SCALE, MAX_SCALE, clampPosition } from './canvas/camera';
 import { Sidebar } from './components/sidebar/Sidebar';
 import { ContextMenu } from './components/context-menu/ContextMenu';
-import type { ContextMenuItem } from './components/context-menu/ContextMenu';
+import { getContextMenuNames, getContextMenuItems } from './components/context-menu/contextMenuItems';
 import { EditorModal, EMPTY_DRAFT } from './components/editor/EditorModal';
 import type { EditorDraft } from './components/editor/EditorModal';
 import { useMultiplayer } from './multiplayer/useMultiplayer';
@@ -22,11 +23,23 @@ import { useRoom } from './multiplayer/useRoom';
 import { JoinModal } from './components/editor/JoinModal';
 import { NewProtoModal } from './components/editor/NewProtoModal';
 import { HiddenRegion } from './components/hidden-region/HiddenRegion';
+import { Tooltip } from './components/Tooltip';
 import useImage from 'use-image';
-import { PLAYER_COLORS, MARQUEE_STROKE, TOOLTIP_BG, TOOLTIP_FG, HOVER_STROKE } from './styles/style_consts';
-
-// Size the background to cover the viewport at maximum zoom-out (MIN_SCALE = 0.1)
-const BG_SIZE = Math.max(window.innerWidth, window.innerHeight) / 0.1;
+import { PLAYER_COLORS, MARQUEE_STROKE, HOVER_STROKE } from './styles/style_consts';
+import { draftFromProps, draftToUpdates } from './state_management/editorDraft';
+import {
+    isLocked as checkLocked,
+    toggleLock as doToggleLock,
+    removeFromSelection as doRemoveFromSelection,
+    deleteInstances as doDeleteInstances,
+    deleteSelected as doDeleteSelected,
+    flipInstances as doFlipInstances,
+    scaleInstances as doScaleInstances,
+    pasteAt as doPasteAt,
+} from './state_management/instanceOps';
+import { findMergeTarget, tryMerge } from './state_management/mergeLogic';
+import { useKeyboardPan } from './hooks/useKeyboardPan';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
 export default function App() {
     const roomCode = useRoom();
@@ -73,49 +86,26 @@ export default function App() {
         return map;
     }, [state.prototypes]);
 
-    // --- Instance helpers ---
+    // --- Instance helper wrappers ---
 
     function isLocked(id: string): boolean {
-        const inst = state.instances.get(id);
-        return !!(inst?.props?.locked);
+        return checkLocked(state.instances, id);
     }
 
     function toggleLock(id: string) {
-        setState(prev => {
-            const inst = prev.instances.get(id);
-            if (!inst) return prev;
-            const next = new Map(prev.instances);
-            next.set(id, { ...inst, props: { ...inst.props, locked: !inst.props?.locked } });
-            return { ...prev, instances: next };
-        });
+        doToggleLock(setState, id);
     }
 
     function removeFromSelection(ids: Iterable<string>) {
-        setSelectedIds(prev => {
-            const next = new Set(prev);
-            for (const id of ids) next.delete(id);
-            return next;
-        });
+        doRemoveFromSelection(setSelectedIds, ids);
     }
 
     function deleteInstances(ids: Set<string>) {
-        if (ids.size === 0) return;
-        setState(prev => {
-            const next = new Map(prev.instances);
-            for (const id of ids) next.delete(id);
-            return { ...prev, instances: next };
-        });
-        removeFromSelection(ids);
+        doDeleteInstances(setState, setSelectedIds, ids);
     }
 
     function deleteSelected(ids: Set<string>) {
-        if (ids.size === 0) return;
-        setState(prev => {
-            const next = new Map(prev.instances);
-            for (const id of ids) next.delete(id);
-            return { ...prev, instances: next, hiddenRegions: (prev.hiddenRegions ?? []).filter(r => !ids.has(r.id)) };
-        });
-        removeFromSelection(ids);
+        doDeleteSelected(setState, setSelectedIds, ids);
     }
 
     function getFocusedIds(): Set<string> {
@@ -126,54 +116,20 @@ export default function App() {
     }
 
     function flipInstances(ids: Set<string>) {
-        if (ids.size === 0) return;
-        setState(prev => {
-            const next = new Map(prev.instances);
-            for (const id of ids) {
-                const inst = next.get(id);
-                if (!inst) continue;
-                const proto = prototypeMap.get(inst.prototypeId);
-                if (!proto || !resolveProps(proto, inst).hasBack) continue;
-                next.set(id, { ...inst, props: { ...inst.props, flipped: !inst.props?.flipped } });
-            }
-            return { ...prev, instances: next };
-        });
+        doFlipInstances(setState, prototypeMap, ids);
     }
 
     function scaleInstances(ids: Set<string>, factor: number) {
-        if (ids.size === 0) return;
-        setState(prev => {
-            const next = new Map(prev.instances);
-            for (const id of ids) {
-                const inst = next.get(id);
-                if (!inst) continue;
-                const current = (inst.props?.scale as number) ?? 1;
-                next.set(id, { ...inst, props: { ...inst.props, scale: current * factor } });
-            }
-            return { ...prev, instances: next };
-        });
+        doScaleInstances(setState, ids, factor);
+    }
+
+    function pasteAt(stageX: number, stageY: number) {
+        doPasteAt(setState, setSelectedIds, setClipboard, clipboard, stageX, stageY);
     }
 
     // --- Camera ---
 
-    const ZOOM_FACTOR = 1.1;
-    const PAN_SPEED = 8;
-    const MIN_SCALE = 0.1;
-    const MAX_SCALE = 10;
-
     const zoomSyncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    function clampPosition(x: number, y: number, scale: number) {
-        const half = BG_SIZE / 2;
-        const minX = -(half * scale - window.innerWidth);
-        const maxX = half * scale;
-        const minY = -(half * scale - window.innerHeight);
-        const maxY = half * scale;
-        return {
-            x: Math.min(maxX, Math.max(minX, x)),
-            y: Math.min(maxY, Math.max(minY, y)),
-        };
-    }
 
     function disableHitGraph() {
         if (layerRef.current) layerRef.current.hitGraphEnabled(false);
@@ -230,127 +186,18 @@ export default function App() {
         };
     }, []);
 
-    // --- Clipboard ---
-
-    function pasteAt(stageX: number, stageY: number) {
-        if (clipboard.length === 0) return;
-        const cx = clipboard.reduce((s, i) => s + i.x, 0) / clipboard.length;
-        const cy = clipboard.reduce((s, i) => s + i.y, 0) / clipboard.length;
-        const dx = stageX - cx;
-        const dy = stageY - cy;
-        const newInstances = clipboard.map(inst => ({
-            ...inst,
-            id: crypto.randomUUID(),
-            x: inst.x + dx,
-            y: inst.y + dy,
-            props: inst.props ? { ...inst.props, locked: undefined } : undefined,
-        }));
-        setState(prev => {
-            const next = new Map(prev.instances);
-            for (const inst of newInstances) next.set(inst.id, inst);
-            return { ...prev, instances: next };
-        });
-        setSelectedIds(new Set(newInstances.map(i => i.id)));
-        setClipboard(newInstances);
-    }
-
     // --- Keyboard input ---
 
-    const heldKeys = useRef<Set<string>>(new Set());
-    const animRef = useRef<number>(0);
-    const HELD_KEYS_SET = useMemo(() => new Set([
-        'w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-        '+', '=', '-', '_',
-    ]), []);
-    const stateRef = useRef({ stageScale, stagePos, selectedIds, hoveredId: hoveredId.current, state, prototypeMap });
+    const stateRef = useRef({ stageScale, stagePos, selectedIds, hoveredId: null as string | null, state, prototypeMap });
     useEffect(() => {
         stateRef.current = { stageScale, stagePos, selectedIds, hoveredId: hoveredId.current, state, prototypeMap };
     });
 
-    useEffect(() => {
-        const SCALE_SPEED = 1.02;
-
-        function tick() {
-            const stage = stageRef.current;
-            if (!stage) { animRef.current = requestAnimationFrame(tick); return; }
-            const keys = heldKeys.current;
-            let dx = 0, dy = 0;
-            if (keys.has('w') || keys.has('ArrowUp')) dy += PAN_SPEED;
-            if (keys.has('s') || keys.has('ArrowDown')) dy -= PAN_SPEED;
-            if (keys.has('a') || keys.has('ArrowLeft')) dx += PAN_SPEED;
-            if (keys.has('d') || keys.has('ArrowRight')) dx -= PAN_SPEED;
-            if (dx !== 0 || dy !== 0) {
-                const pos = stage.position();
-                stage.position(clampPosition(pos.x + dx, pos.y + dy, stage.scaleX()));
-            }
-
-            const scaleUp = keys.has('+') || keys.has('=');
-            const scaleDown = keys.has('-') || keys.has('_');
-            if (scaleUp || scaleDown) {
-                const factor = scaleUp ? SCALE_SPEED : 1 / SCALE_SPEED;
-                const { selectedIds: sel, hoveredId: hov } = stateRef.current;
-                const focused = new Set(sel);
-                const mh = marqueeHitIdsRef.current;
-                if (mh) for (const id of mh) focused.add(id);
-                if (hov) focused.add(hov);
-
-                if (focused.size > 0) {
-                    scaleInstances(focused, factor);
-                } else {
-                    const prev = stage.scaleX();
-                    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, prev * factor));
-                    const cx = window.innerWidth / 2;
-                    const cy = window.innerHeight / 2;
-                    const pos = stage.position();
-                    const mx = (cx - pos.x) / prev;
-                    const my = (cy - pos.y) / prev;
-                    stage.scale({ x: newScale, y: newScale });
-                    stage.position(clampPosition(cx - mx * newScale, cy - my * newScale, newScale));
-                }
-            }
-
-            animRef.current = requestAnimationFrame(tick);
-        }
-
-        function startLoop() {
-            if (!animRef.current) {
-                if (layerRef.current) layerRef.current.hitGraphEnabled(false);
-                animRef.current = requestAnimationFrame(tick);
-            }
-        }
-
-        function stopLoop() {
-            if (animRef.current) {
-                cancelAnimationFrame(animRef.current);
-                animRef.current = 0;
-                if (layerRef.current) layerRef.current.hitGraphEnabled(true);
-                syncStageTransform();
-            }
-        }
-
-        function handleKeyDown(e: KeyboardEvent) {
-            if (HELD_KEYS_SET.has(e.key)) {
-                e.preventDefault();
-                heldKeys.current.add(e.key);
-                startLoop();
-            }
-        }
-
-        function handleKeyUp(e: KeyboardEvent) {
-            heldKeys.current.delete(e.key);
-            if (![...heldKeys.current].some(k => HELD_KEYS_SET.has(k))) stopLoop();
-        }
-
-        const el = canvasRef.current;
-        if (!el) return;
-        el.addEventListener('keydown', handleKeyDown);
-        el.addEventListener('keyup', handleKeyUp);
-        return () => {
-            el.removeEventListener('keydown', handleKeyDown);
-            el.removeEventListener('keyup', handleKeyUp);
-            stopLoop();
-        };
-    }, [HELD_KEYS_SET]);
+    useKeyboardPan({
+        stageRef, layerRef, canvasRef, marqueeHitIdsRef, stateRef,
+        syncStageTransform,
+        scaleInstances,
+    });
 
     function drawFromDeck() {
         const focusedIds = getFocusedIds();
@@ -392,37 +239,10 @@ export default function App() {
         pendingDragId.current = newId;
     }
 
-    useEffect(() => {
-        function handleKeyDown(e: KeyboardEvent) {
-            if ((e.key === 'Delete' || e.key === 'Backspace') && editMode) {
-                e.preventDefault();
-                deleteSelected(getFocusedIds());
-            }
-            if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
-                const ids = getFocusedIds();
-                if (ids.size === 0) return;
-                setClipboard([...ids].map(id => state.instances.get(id)!).filter(Boolean));
-            }
-            if (e.key === 'f') {
-                flipInstances(getFocusedIds());
-            }
-            if (e.key === ' ') {
-                e.preventDefault();
-                drawFromDeck();
-            }
-            if (e.key === 'v' && (e.ctrlKey || e.metaKey) && editMode) {
-                const pointer = stageRef.current?.getPointerPosition();
-                const { stageScale: sc, stagePos: sp } = stateRef.current;
-                const mouse = pointer
-                    ? { x: (pointer.x - sp.x) / sc, y: (pointer.y - sp.y) / sc }
-                    : { x: 20, y: 20 };
-                pasteAt(mouse.x, mouse.y);
-            }
-        }
-        const el = canvasRef.current;
-        if (!el) return;
-        el.addEventListener('keydown', handleKeyDown);
-        return () => el.removeEventListener('keydown', handleKeyDown);
+    useKeyboardShortcuts({
+        canvasRef, stageRef, editMode, stateRef,
+        getFocusedIds, deleteSelected, flipInstances, drawFromDeck,
+        setClipboard, pasteAt,
     });
 
     // --- Drag & drop ---
@@ -469,7 +289,6 @@ export default function App() {
         if (isLocked(draggedId)) { e.target.stopDrag(); return; }
         e.target.opacity(0.7);
 
-        // Move dragged node to the drag layer so main layer doesn't redraw each frame
         if (dragLayerRef.current) {
             e.target.moveTo(dragLayerRef.current);
             e.target.moveToTop();
@@ -487,7 +306,6 @@ export default function App() {
                     node.opacity(0.7);
                     starts.set(id, { x: node.x(), y: node.y() });
                     refs.set(id, node);
-                    // Move selected nodes to drag layer too
                     if (dragLayerRef.current) node.moveTo(dragLayerRef.current);
                 }
             }
@@ -503,7 +321,7 @@ export default function App() {
         const draggedId = e.target.id();
         mergeCheckCounter.current++;
         if (mergeCheckCounter.current % 6 === 0) {
-            const newTarget = findMergeTarget(draggedId);
+            const newTarget = findMergeTarget(draggedId, state, prototypeMap, layerRef, stageRef);
             if (newTarget !== targetedIdRef.current) {
                 targetedIdRef.current = newTarget;
                 setTargetedId(newTarget);
@@ -545,7 +363,6 @@ export default function App() {
                     }
                     return { ...prev, instances: next };
                 });
-                // Restore opacity on secondary nodes (still on drag layer)
                 for (const [id] of dragStartPos.current) {
                     if (id === draggedId) continue;
                     const node = dragNodeRefs.current.get(id);
@@ -556,176 +373,17 @@ export default function App() {
         dragStartPos.current = new Map();
         dragNodeRefs.current = new Map();
 
-        tryMerge(draggedId);
+        tryMerge(draggedId, state, prototypeMap, setState, setSelectedIds, layerRef, stageRef);
 
-        // Move all nodes back from drag layer to main layer
         if (dragLayerRef.current && layerRef.current) {
             const dragChildren = [...dragLayerRef.current.getChildren()];
             for (const node of dragChildren) node.moveTo(layerRef.current);
         }
 
-        // Re-sort z-order on main layer
         if (layerRef.current) {
             const sorted = [...layerRef.current.getChildren()].sort((a, b) => getZOrder(a.name()) - getZOrder(b.name()));
             for (const node of sorted) node.moveToTop();
         }
-    }
-
-    // --- Card/Deck/Stack merge ---
-
-    function findMergeTarget(draggedId: string): string | null {
-        if (!layerRef.current || !stageRef.current) return null;
-        const draggedInst = state.instances.get(draggedId);
-        if (!draggedInst) return null;
-        const draggedProto = prototypeMap.get(draggedInst.prototypeId);
-        if (!draggedProto || draggedProto.type === "board") return null;
-        // Dragged node may be on the drag layer, so search the whole stage
-        const draggedNode = stageRef.current.findOne(`#${draggedId}`);
-        if (!draggedNode) return null;
-        const draggedRect = draggedNode.getClientRect();
-
-        // Iterate layer children directly instead of per-instance findOne() lookups
-        for (const targetNode of layerRef.current.getChildren()) {
-            const targetId = targetNode.id();
-            if (!targetId || targetId === draggedId) continue;
-            const targetInst = state.instances.get(targetId);
-            if (!targetInst) continue;
-            const targetProto = prototypeMap.get(targetInst.prototypeId);
-            if (!targetProto) continue;
-            // Card merges: card→card, card→deck
-            if (draggedProto.type === "card" && targetProto.type !== "card" && targetProto.type !== "deck" && targetProto.type !== "stack") continue;
-            // Deck merges: deck→deck only
-            if (draggedProto.type === "deck" && targetProto.type !== "deck") continue;
-            // Token merges: token→token, token→stack
-            if (draggedProto.type === "token" && targetProto.type !== "token" && targetProto.type !== "stack") continue;
-            // Stack merges: stack→stack only
-            if (draggedProto.type === "stack" && targetProto.type !== "stack") continue;
-            if (rectsOverlap50(draggedRect, targetNode.getClientRect())) return targetId;
-        }
-        return null;
-    }
-
-    function tryMerge(draggedId: string) {
-        const targetId = findMergeTarget(draggedId);
-        if (!targetId) return;
-
-        const draggedInst = state.instances.get(draggedId)!;
-        const draggedProto = prototypeMap.get(draggedInst.prototypeId)!;
-        const targetInst = state.instances.get(targetId)!;
-        const targetProto = prototypeMap.get(targetInst.prototypeId)!;
-
-        // Card → Deck
-        if (draggedProto.type === "card" && targetProto.type === "deck") {
-            const cardEntry = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
-            setState(prev => {
-                const next = new Map(prev.instances);
-                next.delete(draggedId);
-                const target = next.get(targetId)!;
-                next.set(targetId, { ...target, props: { ...target.props, cards: [...((target.props?.cards as unknown[]) ?? []), cardEntry] } });
-                return { ...prev, instances: next };
-            });
-            removeFromSelection([draggedId]);
-            return;
-        }
-
-        // Card → Card = new Deck
-        if (draggedProto.type === "card" && targetProto.type === "card") {
-            const deckProtoId = getOrCreateDeckPrototype();
-            const bottomCard = { prototypeId: targetInst.prototypeId, props: targetInst.props };
-            const topCard = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
-            setState(prev => {
-                const next = new Map(prev.instances);
-                next.delete(draggedId);
-                next.delete(targetId);
-                const newId = crypto.randomUUID();
-                next.set(newId, { id: newId, prototypeId: deckProtoId, x: targetInst.x, y: targetInst.y, props: { cards: [bottomCard, topCard] } });
-                return { ...prev, instances: next };
-            });
-            removeFromSelection([draggedId, targetId]);
-            return;
-        }
-
-        // Deck → Deck
-        if (draggedProto.type === "deck" && targetProto.type === "deck") {
-            const draggedCards = (draggedInst.props?.cards as unknown[]) ?? [];
-            setState(prev => {
-                const next = new Map(prev.instances);
-                next.delete(draggedId);
-                const target = next.get(targetId)!;
-                next.set(targetId, { ...target, props: { ...target.props, cards: [...((target.props?.cards as unknown[]) ?? []), ...draggedCards] } });
-                return { ...prev, instances: next };
-            });
-            removeFromSelection([draggedId]);
-            return;
-        }
-
-        // Any non-container → Stack
-        if (draggedProto.type !== "deck" && draggedProto.type !== "stack" && targetProto.type === "stack") {
-            const itemEntry = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
-            setState(prev => {
-                const next = new Map(prev.instances);
-                next.delete(draggedId);
-                const target = next.get(targetId)!;
-                next.set(targetId, { ...target, props: { ...target.props, items: [...((target.props?.items as unknown[]) ?? []), itemEntry] } });
-                return { ...prev, instances: next };
-            });
-            removeFromSelection([draggedId]);
-            return;
-        }
-
-        // Token → Token = new Stack
-        if (draggedProto.type !== "deck" && draggedProto.type !== "stack" && draggedProto.type !== "board"
-            && targetProto.type !== "deck" && targetProto.type !== "stack" && targetProto.type !== "board") {
-            const stackProtoId = getOrCreateStackPrototype();
-            const bottomItem = { prototypeId: targetInst.prototypeId, props: targetInst.props };
-            const topItem = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
-            setState(prev => {
-                const next = new Map(prev.instances);
-                next.delete(draggedId);
-                next.delete(targetId);
-                const newId = crypto.randomUUID();
-                next.set(newId, { id: newId, prototypeId: stackProtoId, x: targetInst.x, y: targetInst.y, props: { items: [bottomItem, topItem] } });
-                return { ...prev, instances: next };
-            });
-            removeFromSelection([draggedId, targetId]);
-            return;
-        }
-
-        // Stack → Stack
-        if (draggedProto.type === "stack" && targetProto.type === "stack") {
-            const draggedItems = (draggedInst.props?.items as unknown[]) ?? [];
-            setState(prev => {
-                const next = new Map(prev.instances);
-                next.delete(draggedId);
-                const target = next.get(targetId)!;
-                next.set(targetId, { ...target, props: { ...target.props, items: [...((target.props?.items as unknown[]) ?? []), ...draggedItems] } });
-                return { ...prev, instances: next };
-            });
-            removeFromSelection([draggedId]);
-            return;
-        }
-    }
-
-    function getOrCreateDeckPrototype(): string {
-        const existing = state.prototypes.find(p => p.type === "deck");
-        if (existing) return existing.id;
-        const id = crypto.randomUUID();
-        setState(prev => ({
-            ...prev,
-            prototypes: [...prev.prototypes, { id, type: "deck", props: { text: "Deck" } }],
-        }));
-        return id;
-    }
-
-    function getOrCreateStackPrototype(): string {
-        const existing = state.prototypes.find(p => p.type === "stack");
-        if (existing) return existing.id;
-        const id = crypto.randomUUID();
-        setState(prev => ({
-            ...prev,
-            prototypes: [...prev.prototypes, { id, type: "stack", props: { text: "Stack" } }],
-        }));
-        return id;
     }
 
     // --- Marquee selection ---
@@ -878,191 +536,9 @@ export default function App() {
         };
     }, [contextMenu]);
 
-
-
-    function getContextMenuNames(): { heading?: string; subheading?: string } {
-        if (!contextMenu?.instanceId) return {};
-        const inst = state.instances.get(contextMenu.instanceId);
-        if (!inst) return {};
-        const proto = prototypeMap.get(inst.prototypeId);
-        if (!proto) return {};
-        const instName = (inst.props?.name as string) || undefined;
-        const protoName = (proto.props.name as string) || undefined;
-        const heading = instName ?? protoName ?? proto.type;
-        const subheading = instName && protoName && instName !== protoName ? protoName : undefined;
-        return { heading, subheading };
-    }
-
-    function getContextMenuItems(): ContextMenuItem[] {
-        if (!contextMenu) return [];
-        if (!editMode) return [];
-        const instId = contextMenu.instanceId;
-        // Check if it's a hidden region
-        const isRegion = instId && (state.hiddenRegions ?? []).some(r => r.id === instId);
-        if (instId && isRegion) {
-            return [
-                { label: 'Delete Region', action: () => { deleteRegion(instId); setContextMenu(null); } },
-            ];
-        }
-        if (instId) {
-            const inst = state.instances.get(instId);
-            const instProto = inst ? prototypeMap.get(inst.prototypeId) : null;
-            const canFlip = !!(inst && instProto && resolveProps(instProto, inst).hasBack);
-            const items: ContextMenuItem[] = [
-                { label: 'Edit', action: () => { openInstEditor(instId); setContextMenu(null); } },
-                {
-                    label: 'Edit Prototype', action: () => {
-                        const inst = state.instances.get(instId);
-                        if (inst) openProtoEditor(inst.prototypeId);
-                        setContextMenu(null);
-                    }
-                },
-                { label: isLocked(instId) ? 'Unlock' : 'Lock', action: () => toggleLock(instId) },
-            ];
-            if (canFlip) {
-                items.push({
-                    label: 'Flip', action: () => {
-                        flipInstances(new Set([instId]));
-                        setContextMenu(null);
-                    }
-                });
-            }
-            items.push(
-                { label: 'Grow', action: () => scaleInstances(new Set([instId]), 1.2) },
-                { label: 'Shrink', action: () => scaleInstances(new Set([instId]), 1 / 1.2) },
-                {
-                    label: 'Copy', action: () => {
-                        const inst = state.instances.get(instId);
-                        if (inst) setClipboard([inst]);
-                        setContextMenu(null);
-                    }
-                },
-
-                {
-                    label: 'Make Prototype', action: () => {
-                        const inst = state.instances.get(instId);
-                        if (!inst) return;
-                        const proto = prototypeMap.get(inst.prototypeId);
-                        if (!proto) return;
-                        const newProtoId = crypto.randomUUID();
-                        const merged = resolveProps(proto, inst);
-                        const { locked, ...protoProps } = merged as Record<string, unknown> & { locked?: unknown };
-                        setState(prev => {
-                            const next = new Map(prev.instances);
-                            next.set(instId, { ...inst, prototypeId: newProtoId, props: undefined });
-                            return {
-                                ...prev,
-                                prototypes: [...prev.prototypes, { id: newProtoId, type: proto.type, props: protoProps }],
-                                instances: next,
-                            };
-                        });
-                        setContextMenu(null);
-                    }
-                },
-                { label: 'Delete', action: () => { deleteInstances(new Set([instId])); setContextMenu(null); } },
-            );
-            return items;
-        }
-        if (clipboard.length > 0) {
-            return [{
-                label: 'Paste', action: () => {
-                    const stageCoords = screenToStage(contextMenu.x, contextMenu.y);
-                    pasteAt(stageCoords.x, stageCoords.y);
-                    setContextMenu(null);
-                }
-            }];
-        }
-        return [];
-    }
-
     // --- Editors ---
 
     const editingProto = editingProtoId ? prototypeMap.get(editingProtoId) ?? null : null;
-
-    function draftFromProps(props: Record<string, unknown>, defaultScale: string = '1'): EditorDraft {
-        return {
-            name: (props.name as string) ?? '',
-            text: (props.text as string) ?? '',
-            scale: props.scale != null ? String(props.scale) : defaultScale,
-            imageSrc: (props.src as string) ?? (props.imageSrc as string) ?? '',
-            gridNumWidth: props.gridNumWidth != null ? String(props.gridNumWidth) : '',
-            gridNumHeight: props.gridNumHeight != null ? String(props.gridNumHeight) : '',
-            gridCol: props.gridCol != null ? String(props.gridCol) : '',
-            gridRow: props.gridRow != null ? String(props.gridRow) : '',
-            hasBack: !!(props.hasBack),
-            backImageSrc: (props.backImageSrc as string) ?? '',
-            backText: (props.backText as string) ?? '',
-            backGridNumWidth: props.backGridNumWidth != null ? String(props.backGridNumWidth) : '',
-            backGridNumHeight: props.backGridNumHeight != null ? String(props.backGridNumHeight) : '',
-            backGridCol: props.backGridCol != null ? String(props.backGridCol) : '',
-            backGridRow: props.backGridRow != null ? String(props.backGridRow) : '',
-            flipped: !!(props.flipped),
-            customSizing: !!(props.customSizing),
-            sizeX: props.sizeX != null ? String(props.sizeX) : '',
-            sizeY: props.sizeY != null ? String(props.sizeY) : '',
-        };
-    }
-
-    function draftToUpdates(draft: EditorDraft, existingProps?: Record<string, unknown>): Record<string, unknown> {
-        const updates: Record<string, unknown> = {};
-        if (draft.name) updates.name = draft.name;
-        if (draft.text) updates.text = draft.text;
-        const scaleVal = parseFloat(draft.scale);
-        if (!isNaN(scaleVal) && scaleVal > 0) updates.scale = scaleVal;
-        if (draft.imageSrc) {
-            const imageKey = existingProps && 'src' in existingProps ? 'src' : 'imageSrc';
-            updates[imageKey] = draft.imageSrc;
-        }
-        const gnw = parseInt(draft.gridNumWidth);
-        const gnh = parseInt(draft.gridNumHeight);
-        if (!isNaN(gnw) && gnw > 0 && !isNaN(gnh) && gnh > 0) {
-            updates.gridNumWidth = gnw;
-            updates.gridNumHeight = gnh;
-            const gc = parseInt(draft.gridCol);
-            const gr = parseInt(draft.gridRow);
-            updates.gridCol = !isNaN(gc) ? gc : 0;
-            updates.gridRow = !isNaN(gr) ? gr : 0;
-        } else {
-            updates.gridNumWidth = undefined;
-            updates.gridNumHeight = undefined;
-            updates.gridCol = undefined;
-            updates.gridRow = undefined;
-        }
-        updates.hasBack = draft.hasBack;
-        updates.backImageSrc = draft.hasBack ? draft.backImageSrc : '';
-        updates.backText = draft.hasBack ? draft.backText : '';
-        if (draft.hasBack) {
-            const bgnw = parseInt(draft.backGridNumWidth);
-            const bgnh = parseInt(draft.backGridNumHeight);
-            if (!isNaN(bgnw) && bgnw > 0 && !isNaN(bgnh) && bgnh > 0) {
-                updates.backGridNumWidth = bgnw;
-                updates.backGridNumHeight = bgnh;
-                const bgc = parseInt(draft.backGridCol);
-                const bgr = parseInt(draft.backGridRow);
-                updates.backGridCol = !isNaN(bgc) ? bgc : 0;
-                updates.backGridRow = !isNaN(bgr) ? bgr : 0;
-            } else {
-                updates.backGridNumWidth = undefined;
-                updates.backGridNumHeight = undefined;
-                updates.backGridCol = undefined;
-                updates.backGridRow = undefined;
-            }
-        } else {
-            updates.backGridNumWidth = undefined;
-            updates.backGridNumHeight = undefined;
-            updates.backGridCol = undefined;
-            updates.backGridRow = undefined;
-        }
-        updates.flipped = draft.flipped;
-        updates.customSizing = draft.customSizing;
-        if (draft.customSizing) {
-            const x = parseFloat(draft.sizeX);
-            const y = parseFloat(draft.sizeY);
-            if (!isNaN(x) && x > 0) updates.sizeX = x;
-            if (!isNaN(y) && y > 0) updates.sizeY = y;
-        }
-        return updates;
-    }
 
     const openProtoEditor = useCallback((protoId: string) => {
         const proto = stateRef.current.prototypeMap.get(protoId);
@@ -1074,7 +550,6 @@ export default function App() {
     function saveProtoEdits() {
         if (!editingProto) return;
         const updates = draftToUpdates(protoDraft, editingProto.props);
-        // Proto always saves text even if empty
         updates.text = protoDraft.text;
         const newType = protoDraft.type ?? editingProto.type;
         setState(prev => ({
@@ -1093,7 +568,6 @@ export default function App() {
         if (!inst) return;
         const proto = prototypeMap.get(inst.prototypeId);
         setInstDraft(draftFromProps(inst.props ?? {}, ''));
-        // Carry hasBack and type from prototype
         if (proto) {
             setInstDraft(prev => ({ ...prev, hasBack: !!(proto.props.hasBack), type: proto.type }));
         }
@@ -1132,7 +606,6 @@ export default function App() {
     }
 
     // --- Players ---
-
 
     const addPlayer = useCallback(() => {
         setState(prev => {
@@ -1217,7 +690,6 @@ export default function App() {
         removeFromSelection(new Set([id]));
     }
 
-    // Build a set of instance IDs hidden from the current player
     const hiddenInstanceIds = useMemo(() => {
         const hidden = new Set<string>();
         if (editMode) return hidden;
@@ -1229,7 +701,6 @@ export default function App() {
             if (!proto) continue;
             const resolved = resolveProps(proto, inst);
             const scale = (resolved.scale as number) ?? 1;
-            // Approximate instance bounds — cards/tokens/decks use ~100×150 base, boards vary
             let w = 100 * scale;
             let h = 150 * scale;
             if (proto.type === 'token') { w = 50 * scale; h = 50 * scale; }
@@ -1345,6 +816,21 @@ export default function App() {
         }
     }, []);
 
+    // --- Context menu (computed before JSX to allow eslint-disable) ---
+
+    const contextMenuNames = contextMenu ? getContextMenuNames(contextMenu, state, prototypeMap) : {};
+    // eslint-disable-next-line react-hooks/refs -- action callbacks only; no refs read during render
+    const contextMenuItems = contextMenu ? getContextMenuItems(contextMenu, {
+        state, prototypeMap, setState, setSelectedIds, setContextMenu, setClipboard,
+        editMode, openInstEditor, openProtoEditor,
+        flipInstances, scaleInstances, deleteInstances, deleteRegion, toggleLock, isLocked,
+        pasteAt, clipboard,
+        pastePosition: {
+            x: (contextMenu.x - stagePos.x) / stageScale,
+            y: (contextMenu.y - stagePos.y) / stageScale,
+        },
+    }) : [];
+
     // --- Render ---
 
     return (
@@ -1449,22 +935,11 @@ export default function App() {
                     </Layer>
                 </Stage>
             </div>
-            {contextMenu && <ContextMenu x={contextMenu.x} y={contextMenu.y} {...getContextMenuNames()} items={getContextMenuItems()} />}
-            {tooltip && !contextMenu && (
-                <div style={{
-                    position: 'absolute',
-                    left: tooltip.x + 12,
-                    top: tooltip.y + 12,
-                    background: TOOLTIP_BG,
-                    color: TOOLTIP_FG,
-                    padding: '4px 8px',
-                    borderRadius: 4,
-                    fontSize: 12,
-                    pointerEvents: 'none',
-                    zIndex: 1000,
-                    whiteSpace: 'pre',
-                }}><span>{tooltip.text}</span></div>
-            )}
+            {contextMenu && <ContextMenu x={contextMenu.x} y={contextMenu.y}
+                {...contextMenuNames}
+                items={contextMenuItems}
+            />}
+            {tooltip && !contextMenu && <Tooltip x={tooltip.x} y={tooltip.y} text={tooltip.text} />}
             {editingProto && <EditorModal
                 opened
                 onClose={() => setEditingProtoId(null)}
