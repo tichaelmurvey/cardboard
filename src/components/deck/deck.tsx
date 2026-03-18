@@ -1,10 +1,9 @@
-import { memo, useCallback } from "react";
-import { Group, Rect, Image, Text } from "react-konva";
-import { useHover } from "../../hooks/useHover";
-import { HOVER_STROKE, SELECTED_STROKE, TARGETED_STROKE, NO_STROKE } from "../../styles/style_consts";
-import type { GridCrop } from "../../canvas/gridCrop";
-import { useCropProps, gridCropEqual } from "../../canvas/gridCrop";
+import { memo } from "react";
+import { Rect } from "react-konva";
 import useImage from "use-image";
+import { GameComponent } from "../game_component/game_component";
+import type { GridCrop } from "../../canvas/gridCrop";
+import { gridCropEqual } from "../../canvas/gridCrop";
 
 const DEFAULT_WIDTH = 100;
 const DEFAULT_HEIGHT = 150;
@@ -27,11 +26,8 @@ interface DeckProps {
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export const Deck = memo(function Deck({ id, x, y, cardCount, imageSrc, text, gridCrop, selected, hovered: hoveredOverride, targeted, scale = 1, onDragEnd }: DeckProps) {
-    const { hovered: internalHovered, hoverProps } = useHover();
-    const hovered = hoveredOverride ?? internalHovered;
+export const Deck = memo(function Deck({ id, x, y, cardCount, imageSrc, text, gridCrop, selected, hovered, targeted, scale = 1, onDragEnd }: DeckProps) {
     const [image] = useImage(imageSrc ?? "");
-    const cropProps = useCropProps(image, gridCrop);
 
     const stackLines = Math.min(cardCount, MAX_STACK_LINES);
     let w = DEFAULT_WIDTH;
@@ -55,20 +51,17 @@ export const Deck = memo(function Deck({ id, x, y, cardCount, imageSrc, text, gr
         }
     }
 
-    return <Group
-        id={id}
-        name="deck"
-        x={x}
-        y={y}
-        offsetX={w / 2}
-        offsetY={h / 2}
-        scaleX={scale}
-        scaleY={scale}
-        draggable
-        {...hoverProps}
-        onDragEnd={useCallback((e: import('konva/lib/Node').KonvaEventObject<DragEvent>) => {
-            onDragEnd?.(id, e.target.x(), e.target.y());
-        }, [onDragEnd, id])}
+    return <GameComponent
+        id={id} name="deck" x={x} y={y}
+        width={w} height={h}
+        offsetX={w / 2} offsetY={h / 2}
+        scaleX={scale} scaleY={scale}
+        imageSrc={imageSrc}
+        gridCrop={gridCrop}
+        text={text}
+        selected={selected} hovered={hovered} targeted={targeted}
+        onDragEnd={onDragEnd}
+        fillColor="brown" fillAlways textColor="white"
     >
         {Array.from({ length: stackLines }, (_, i) => (
             <Rect
@@ -82,31 +75,7 @@ export const Deck = memo(function Deck({ id, x, y, cardCount, imageSrc, text, gr
                 strokeWidth={0.5}
             />
         ))}
-        <Rect
-            width={w}
-            height={h}
-            fill="brown"
-            shadowBlur={10}
-        />
-        {image && <Image image={image} width={w} height={h} {...cropProps} />}
-        {!image && text && (
-            <Text
-                width={w}
-                height={h}
-                text={text}
-                fontSize={18}
-                fontFamily="Calibri"
-                fill="white"
-                padding={6}
-            />
-        )}
-        <Rect
-            width={w}
-            height={h}
-            listening={false}
-            {...(targeted ? TARGETED_STROKE : selected ? SELECTED_STROKE : hovered ? HOVER_STROKE : NO_STROKE)}
-        />
-    </Group>;
+    </GameComponent>;
 }, (prev, next) =>
     prev.id === next.id && prev.x === next.x && prev.y === next.y &&
     prev.cardCount === next.cardCount && prev.imageSrc === next.imageSrc &&

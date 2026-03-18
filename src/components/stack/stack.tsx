@@ -1,10 +1,9 @@
-import { memo, useCallback } from "react";
-import { Group, Rect, Image, Text } from "react-konva";
-import { useHover } from "../../hooks/useHover";
-import { HOVER_STROKE, SELECTED_STROKE, TARGETED_STROKE, NO_STROKE } from "../../styles/style_consts";
-import type { GridCrop } from "../../canvas/gridCrop";
-import { useCropProps, gridCropEqual } from "../../canvas/gridCrop";
+import { memo } from "react";
+import { Rect } from "react-konva";
 import useImage from "use-image";
+import { GameComponent } from "../game_component/game_component";
+import type { GridCrop } from "../../canvas/gridCrop";
+import { gridCropEqual } from "../../canvas/gridCrop";
 
 const DEFAULT_SIZE = 80;
 const STACK_OFFSET = 2;
@@ -25,11 +24,8 @@ interface StackProps {
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, gridCrop, selected, hovered: hoveredOverride, targeted, scale = 1, onDragEnd }: StackProps) {
-    const { hovered: internalHovered, hoverProps } = useHover();
-    const hovered = hoveredOverride ?? internalHovered;
+export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, gridCrop, selected, hovered, targeted, scale = 1, onDragEnd }: StackProps) {
     const [image] = useImage(imageSrc ?? "");
-    const cropProps = useCropProps(image, gridCrop);
 
     const stackLines = Math.min(itemCount, MAX_STACK_LINES);
     let w = DEFAULT_SIZE;
@@ -53,20 +49,18 @@ export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, 
         }
     }
 
-    return <Group
-        id={id}
-        name="stack"
-        x={x}
-        y={y}
-        offsetX={w / 2}
-        offsetY={h / 2}
-        scaleX={scale}
-        scaleY={scale}
-        draggable
-        {...hoverProps}
-        onDragEnd={useCallback((e: import('konva/lib/Node').KonvaEventObject<DragEvent>) => {
-            onDragEnd?.(id, e.target.x(), e.target.y());
-        }, [onDragEnd, id])}
+    return <GameComponent
+        id={id} name="stack" x={x} y={y}
+        width={w} height={h}
+        offsetX={w / 2} offsetY={h / 2}
+        scaleX={scale} scaleY={scale}
+        imageSrc={imageSrc}
+        gridCrop={gridCrop}
+        text={text}
+        selected={selected} hovered={hovered} targeted={targeted}
+        onDragEnd={onDragEnd}
+        fillColor="white" textColor="black"
+        textAlign="center" textVerticalAlign="middle"
     >
         {Array.from({ length: stackLines }, (_, i) => (
             <Rect
@@ -80,33 +74,7 @@ export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, 
                 strokeWidth={0.5}
             />
         ))}
-        <Rect
-            width={w}
-            height={h}
-            fill={!image ? "white" : undefined}
-            shadowBlur={10}
-        />
-        {image && <Image image={image} width={w} height={h} {...cropProps} />}
-        {!image && text && (
-            <Text
-                width={w}
-                height={h}
-                text={text}
-                fontSize={18}
-                fontFamily="Calibri"
-                fill="black"
-                align="center"
-                verticalAlign="middle"
-                padding={6}
-            />
-        )}
-        <Rect
-            width={w}
-            height={h}
-            listening={false}
-            {...(targeted ? TARGETED_STROKE : selected ? SELECTED_STROKE : hovered ? HOVER_STROKE : NO_STROKE)}
-        />
-    </Group>;
+    </GameComponent>;
 }, (prev, next) =>
     prev.id === next.id && prev.x === next.x && prev.y === next.y &&
     prev.itemCount === next.itemCount && prev.imageSrc === next.imageSrc &&
