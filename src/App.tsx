@@ -23,7 +23,7 @@ import { JoinModal } from './components/editor/JoinModal';
 import { NewProtoModal } from './components/editor/NewProtoModal';
 import { HiddenRegion } from './components/hidden-region/HiddenRegion';
 import useImage from 'use-image';
-import { PLAYER_COLORS, MARQUEE_STROKE, TOOLTIP_BG, TOOLTIP_FG } from './styles/style_consts';
+import { PLAYER_COLORS, MARQUEE_STROKE, TOOLTIP_BG, TOOLTIP_FG, HOVER_STROKE } from './styles/style_consts';
 
 // Size the background to cover the viewport at maximum zoom-out (MIN_SCALE = 0.1)
 const BG_SIZE = Math.max(window.innerWidth, window.innerHeight) / 0.1;
@@ -41,7 +41,7 @@ export default function App() {
     const selBoxRef = useRef<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
     const marqueeRectRef = useRef<Konva.Rect | null>(null);
     const marqueeLayerRef = useRef<Konva.Layer | null>(null);
-    const [marqueeHitIds, setMarqueeHitIds] = useState<Set<string> | null>(null);
+    const marqueeHitIdsRef = useRef<Set<string> | null>(null);
     const isSelecting = useRef(false);
     const dragStartPos = useRef<Map<string, { x: number; y: number }>>(new Map());
     const dragNodeRefs = useRef<Map<string, Konva.Node>>(new Map());
@@ -120,7 +120,7 @@ export default function App() {
 
     function getFocusedIds(): Set<string> {
         const ids = new Set(selectedIds);
-        if (marqueeHitIds) for (const id of marqueeHitIds) ids.add(id);
+        if (marqueeHitIdsRef.current) for (const id of marqueeHitIdsRef.current) ids.add(id);
         if (hoveredId.current) ids.add(hoveredId.current);
         return ids;
     }
@@ -262,9 +262,9 @@ export default function App() {
         'w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
         '+', '=', '-', '_',
     ]), []);
-    const stateRef = useRef({ stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId: hoveredId.current, state, prototypeMap });
+    const stateRef = useRef({ stageScale, stagePos, selectedIds, hoveredId: hoveredId.current, state, prototypeMap });
     useEffect(() => {
-        stateRef.current = { stageScale, stagePos, selectedIds, marqueeHitIds, hoveredId: hoveredId.current, state, prototypeMap };
+        stateRef.current = { stageScale, stagePos, selectedIds, hoveredId: hoveredId.current, state, prototypeMap };
     });
 
     useEffect(() => {
@@ -288,8 +288,9 @@ export default function App() {
             const scaleDown = keys.has('-') || keys.has('_');
             if (scaleUp || scaleDown) {
                 const factor = scaleUp ? SCALE_SPEED : 1 / SCALE_SPEED;
-                const { selectedIds: sel, marqueeHitIds: mh, hoveredId: hov } = stateRef.current;
+                const { selectedIds: sel, hoveredId: hov } = stateRef.current;
                 const focused = new Set(sel);
+                const mh = marqueeHitIdsRef.current;
                 if (mh) for (const id of mh) focused.add(id);
                 if (hov) focused.add(hov);
 
@@ -772,6 +773,26 @@ export default function App() {
         return hits;
     }
 
+    function applyMarqueeStrokes(oldHits: Set<string> | null, newHits: Set<string>) {
+        const layer = layerRef.current;
+        if (!layer) return;
+        if (oldHits) {
+            for (const id of oldHits) {
+                if (newHits.has(id)) continue;
+                const group = layer.findOne('#' + id);
+                const strokeNode = group?.findOne('.stroke');
+                if (strokeNode) { strokeNode.stroke(''); strokeNode.strokeWidth(0); }
+            }
+        }
+        for (const id of newHits) {
+            if (oldHits?.has(id) || selectedIds.has(id)) continue;
+            const group = layer.findOne('#' + id);
+            const strokeNode = group?.findOne('.stroke');
+            if (strokeNode) { strokeNode.stroke(HOVER_STROKE.stroke); strokeNode.strokeWidth(HOVER_STROKE.strokeWidth); }
+        }
+        layer.batchDraw();
+    }
+
     function handleStageMouseDown(e: KonvaEventObject<MouseEvent>) {
         const evt = e.evt as MouseEvent;
         if (evt.button === 1) {
@@ -790,7 +811,8 @@ export default function App() {
         isSelecting.current = true;
         selBoxRef.current = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
         updateMarqueeRect();
-        setMarqueeHitIds(null);
+        applyMarqueeStrokes(marqueeHitIdsRef.current, new Set());
+        marqueeHitIdsRef.current = null;
         if (!evt.shiftKey) setSelectedIds(new Set());
     }
 
@@ -813,11 +835,8 @@ export default function App() {
         if (now - lastMarqueeCheck.current >= 50) {
             lastMarqueeCheck.current = now;
             const newHits = computeMarqueeHits(selBoxRef.current);
-            setMarqueeHitIds(prev => {
-                if (newHits.size !== (prev?.size ?? 0)) return newHits;
-                for (const id of newHits) { if (!prev?.has(id)) return newHits; }
-                return prev;
-            });
+            applyMarqueeStrokes(marqueeHitIdsRef.current, newHits);
+            marqueeHitIdsRef.current = newHits;
         }
     }
 
@@ -827,11 +846,14 @@ export default function App() {
             isSelecting.current = false;
             selBoxRef.current = null;
             updateMarqueeRect();
-            setMarqueeHitIds(null);
+            applyMarqueeStrokes(marqueeHitIdsRef.current, new Set());
+            marqueeHitIdsRef.current = null;
             return;
         }
         isSelecting.current = false;
         const hits = computeMarqueeHits(selBoxRef.current);
+        applyMarqueeStrokes(marqueeHitIdsRef.current, new Set());
+        marqueeHitIdsRef.current = null;
         if (hits.size > 0) {
             setSelectedIds(prev => {
                 const next = new Set(prev);
@@ -841,7 +863,6 @@ export default function App() {
         }
         selBoxRef.current = null;
         updateMarqueeRect();
-        setMarqueeHitIds(null);
     }
 
     // --- Context menu ---
@@ -1391,8 +1412,7 @@ export default function App() {
                             const proto = prototypeMap.get(inst.prototypeId);
                             if (!proto) return null;
                             const locked = !!(inst.props?.locked);
-                            const hovered = locked ? false : marqueeHitIds ? marqueeHitIds.has(inst.id) : undefined;
-                            return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), hovered, targetedId === inst.id, prototypeMap);
+                            return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), undefined, targetedId === inst.id, prototypeMap);
                         })}
                         {(state.hiddenRegions ?? []).map(region => {
                             const player = playerMap.get(region.playerId);

@@ -116,6 +116,7 @@ export function GameComponent({
                 />
             )}
             <Shape
+                name="stroke"
                 width={width}
                 height={height}
                 listening={false}

@@ -1,6 +1,9 @@
 ONGOING
 
 NEXT
+Check for any runtime stuff that can be moved to loadtime
+Cache bounding rects at runtime
+make collision detection only happen on drag end, no other time.
 prototype folders
 Add grid image row/cell to editable properties
 prototype images
