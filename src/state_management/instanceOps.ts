@@ -1,5 +1,5 @@
 import type { CanvasState, Instance, Prototype } from './types';
-import { resolveProps } from './types';
+import { resolveProps, getInstanceType } from './types';
 
 type SetState = React.Dispatch<React.SetStateAction<CanvasState>>;
 type SetIds = React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -47,6 +47,16 @@ export function deleteSelected(setState: SetState, setSelectedIds: SetIds, ids: 
     removeFromSelection(setSelectedIds, ids);
 }
 
+function flipContainerEntries(entries: unknown[], prototypeMap: Map<string, Prototype>): unknown[] {
+    return [...entries].reverse().map(entry => {
+        const e = entry as { prototypeId?: string; props?: Record<string, unknown> };
+        const proto = e.prototypeId ? prototypeMap.get(e.prototypeId) : undefined;
+        const merged = { ...proto?.props, ...e.props };
+        if (!merged.hasBack) return e;
+        return { ...e, props: { ...e.props, flipped: !e.props?.flipped } };
+    });
+}
+
 export function flipInstances(setState: SetState, prototypeMap: Map<string, Prototype>, ids: Set<string>) {
     if (ids.size === 0) return;
     setState(prev => {
@@ -54,9 +64,20 @@ export function flipInstances(setState: SetState, prototypeMap: Map<string, Prot
         for (const id of ids) {
             const inst = next.get(id);
             if (!inst) continue;
-            const proto = prototypeMap.get(inst.prototypeId);
-            if (!proto || !resolveProps(proto, inst).hasBack) continue;
-            next.set(id, { ...inst, props: { ...inst.props, flipped: !inst.props?.flipped } });
+            const proto = inst.prototypeId ? prototypeMap.get(inst.prototypeId) : undefined;
+            const type = getInstanceType(inst, proto);
+            if (type === 'deck') {
+                const resolved = resolveProps(proto, inst);
+                const cards = (resolved.cards as unknown[]) ?? [];
+                next.set(id, { ...inst, props: { ...inst.props, cards: flipContainerEntries(cards, prototypeMap) } });
+            } else if (type === 'stack') {
+                const resolved = resolveProps(proto, inst);
+                const items = (resolved.items as unknown[]) ?? [];
+                next.set(id, { ...inst, props: { ...inst.props, items: flipContainerEntries(items, prototypeMap) } });
+            } else {
+                if (!resolveProps(proto, inst).hasBack) continue;
+                next.set(id, { ...inst, props: { ...inst.props, flipped: !inst.props?.flipped } });
+            }
         }
         return { ...prev, instances: next };
     });

@@ -8,7 +8,7 @@ import { DEFAULT_STATE } from './state_management/defaults';
 import { downloadJson, uploadJson } from './state_management/persistence';
 import { convertTTSSave } from './state_management/importTTS';
 import type { CanvasState, Instance, ObjectType, Prototype, PrototypeGroup } from './state_management/types';
-import { resolveProps, isPrototypeGroup } from './state_management/types';
+import { resolveProps, getInstanceType, isPrototypeGroup } from './state_management/types';
 import { flattenPrototypes, insertAtPath, removeById, updatePrototypeById, updateGroupById, collectPrototypeIds, collectGroups, moveToGroup, findParentGroupId } from './state_management/prototypeUtils';
 import { rectsIntersect } from './utils/geometry';
 import type { Rect2D } from './utils/geometry';
@@ -206,15 +206,16 @@ export default function App() {
         for (const id of focusedIds) {
             const inst = state.instances.get(id);
             if (!inst) continue;
-            const proto = prototypeMap.get(inst.prototypeId);
-            if (proto?.type === "deck" || proto?.type === "stack") { containerInst = inst; break; }
+            const type = getInstanceType(inst, inst.prototypeId ? prototypeMap.get(inst.prototypeId) : undefined);
+            if (type === "deck" || type === "stack") { containerInst = inst; break; }
         }
         if (!containerInst) return;
 
-        const containerProto = prototypeMap.get(containerInst.prototypeId);
-        const isStack = containerProto?.type === "stack";
+        const containerProto = containerInst.prototypeId ? prototypeMap.get(containerInst.prototypeId) : undefined;
+        const isStack = getInstanceType(containerInst, containerProto) === "stack";
         const itemsKey = isStack ? "items" : "cards";
-        const entries = (containerInst.props?.[itemsKey] as { prototypeId: string; props?: Record<string, unknown> }[]) ?? [];
+        const resolved = resolveProps(containerProto, containerInst);
+        const entries = (resolved[itemsKey] as { prototypeId: string; props?: Record<string, unknown> }[]) ?? [];
         if (entries.length === 0) return;
 
         const topItem = entries[entries.length - 1];
@@ -567,18 +568,18 @@ export default function App() {
     function openInstEditor(instanceId: string) {
         const inst = state.instances.get(instanceId);
         if (!inst) return;
-        const proto = prototypeMap.get(inst.prototypeId);
+        const proto = inst.prototypeId ? prototypeMap.get(inst.prototypeId) : undefined;
         setInstDraft(draftFromProps(inst.props ?? {}, ''));
-        if (proto) {
-            const instType = (inst.props?.type as ObjectType) ?? proto.type;
-            setInstDraft(prev => ({ ...prev, hasBack: !!(proto.props.hasBack), type: instType }));
+        const instType = (inst.props?.type as ObjectType) ?? proto?.type;
+        if (instType) {
+            setInstDraft(prev => ({ ...prev, hasBack: !!(proto?.props?.hasBack) || !!(inst.props?.hasBack), type: instType }));
         }
         setEditingInstId(instanceId);
     }
 
     function saveInstEdits() {
         if (!editingInst) return;
-        const proto = prototypeMap.get(editingInst.prototypeId);
+        const proto = editingInst.prototypeId ? prototypeMap.get(editingInst.prototypeId) : undefined;
         const updates = draftToUpdates(instDraft, proto?.props);
         if (instDraft.type && instDraft.type !== proto?.type) {
             updates.type = instDraft.type;
@@ -596,7 +597,7 @@ export default function App() {
 
     function getInstPlaceholders() {
         if (!editingInst) return { name: '', text: '', scale: '', imageSrc: '' };
-        const p = prototypeMap.get(editingInst.prototypeId);
+        const p = editingInst.prototypeId ? prototypeMap.get(editingInst.prototypeId) : undefined;
         return {
             name: (p?.props.name as string) ?? '',
             text: (p?.props.text as string) ?? '',
@@ -742,14 +743,14 @@ export default function App() {
         const otherRegions = (state.hiddenRegions ?? []).filter(r => r.playerId !== assignedPlayerId);
         if (otherRegions.length === 0) return hidden;
         for (const inst of state.instances.values()) {
-            const proto = prototypeMap.get(inst.prototypeId);
-            if (!proto) continue;
+            const proto = inst.prototypeId ? prototypeMap.get(inst.prototypeId) : undefined;
+            const type = getInstanceType(inst, proto);
             const resolved = resolveProps(proto, inst);
             const scale = (resolved.scale as number) ?? 1;
             let w = 100 * scale;
             let h = 150 * scale;
-            if (proto.type === 'token') { w = 50 * scale; h = 50 * scale; }
-            if (proto.type === 'board') { w = 200 * scale; h = 200 * scale; }
+            if (type === 'token') { w = 50 * scale; h = 50 * scale; }
+            if (type === 'board') { w = 200 * scale; h = 200 * scale; }
             const instRect: Rect2D = { x: inst.x - w / 2, y: inst.y - h / 2, width: w, height: h };
             for (const region of otherRegions) {
                 const regionRect: Rect2D = { x: region.x, y: region.y, width: region.width, height: region.height };
@@ -827,13 +828,13 @@ export default function App() {
         const locked = !!(inst?.props?.locked);
         if (id && !locked) hoveredId.current = id;
         if (!id || !inst) { setTooltip(null); return; }
-        const proto = pm.get(inst.prototypeId);
-        if (!proto) { setTooltip(null); return; }
-        if (proto.type === 'deck') {
-            const count = ((inst.props?.cards as unknown[]) ?? []).length;
+        const proto = inst.prototypeId ? pm.get(inst.prototypeId) : undefined;
+        const type = getInstanceType(inst, proto);
+        if (type === 'deck') {
+            const count = ((resolveProps(proto, inst).cards as unknown[]) ?? []).length;
             setTooltip({ x: e.evt.clientX, y: e.evt.clientY, text: `[${count}]\n[space] to draw` });
-        } else if (proto.type === 'stack') {
-            const count = ((inst.props?.items as unknown[]) ?? []).length;
+        } else if (type === 'stack') {
+            const count = ((resolveProps(proto, inst).items as unknown[]) ?? []).length;
             setTooltip({ x: e.evt.clientX, y: e.evt.clientY, text: `[${count}]\n[space] to draw` });
         } else {
             setTooltip(null);
@@ -947,8 +948,8 @@ export default function App() {
                         onClick={handleLayerClick}>
                         {[...state.instances.values()].map(inst => {
                             if (hiddenInstanceIds.has(inst.id)) return null;
-                            const proto = prototypeMap.get(inst.prototypeId);
-                            if (!proto) return null;
+                            const proto = inst.prototypeId ? prototypeMap.get(inst.prototypeId) : undefined;
+                            if (inst.prototypeId && !proto) return null;
                             const locked = !!(inst.props?.locked);
                             return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), locked ? false : undefined, targetedId === inst.id, prototypeMap);
                         })}
@@ -1017,14 +1018,14 @@ export default function App() {
                 onDraftChange={setInstDraft}
                 onSave={saveInstEdits}
                 placeholders={getInstPlaceholders()}
-                protoType={prototypeMap.get(editingInst.prototypeId)?.type}
+                protoType={editingInst.prototypeId ? prototypeMap.get(editingInst.prototypeId)?.type : undefined}
                 isInstance
-                onEditPrototype={() => {
-                    const protoId = editingInst.prototypeId;
+                onEditPrototype={editingInst.prototypeId ? (() => {
+                    const protoId = editingInst.prototypeId!;
                     setEditingInstId(null);
                     openProtoEditor(protoId);
-                }}
-                onResetToPrototype={() => {
+                }) : undefined}
+                onResetToPrototype={editingInst.prototypeId ? (() => {
                     setState(prev => {
                         const next = new Map(prev.instances);
                         const inst = next.get(editingInstId!);
@@ -1032,7 +1033,7 @@ export default function App() {
                         return { ...prev, instances: next };
                     });
                     setEditingInstId(null);
-                }}
+                }) : undefined}
             />}
             <JoinModal opened={!assignedPlayerId} onJoin={claimPlayer} />
             {creatingProto && <EditorModal

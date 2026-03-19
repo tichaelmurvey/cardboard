@@ -22,7 +22,7 @@ export function isPrototypeGroup(item: PrototypeItem): item is PrototypeGroup {
 
 export interface Instance {
     id: ObjectId;
-    prototypeId: ObjectId;
+    prototypeId?: ObjectId;
     x: number;
     y: number;
     props?: Record<string, unknown>;
@@ -66,6 +66,11 @@ export function instancesToArray(instances: Map<string, Instance>): Instance[] {
 }
 
 /** Resolve an instance's effective props by merging prototype defaults with instance overrides. */
-export function resolveProps(prototype: Prototype, instance: Instance): Record<string, unknown> {
-    return { ...prototype.props, ...instance.props };
+export function resolveProps(prototype: Prototype | undefined, instance: Instance): Record<string, unknown> {
+    return { ...prototype?.props, ...instance.props };
+}
+
+/** Get the effective type for an instance (instance prop override > prototype type). */
+export function getInstanceType(instance: Instance, prototype?: Prototype): string | undefined {
+    return (instance.props?.type as string) ?? prototype?.type;
 }

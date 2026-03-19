@@ -1,6 +1,6 @@
 import type { ContextMenuItem } from './ContextMenu';
 import type { CanvasState, Instance, Prototype } from '../../state_management/types';
-import { resolveProps } from '../../state_management/types';
+import { resolveProps, getInstanceType } from '../../state_management/types';
 
 type SetState = React.Dispatch<React.SetStateAction<CanvasState>>;
 
@@ -33,11 +33,11 @@ export function getContextMenuNames(
     if (!contextMenu?.instanceId) return {};
     const inst = state.instances.get(contextMenu.instanceId);
     if (!inst) return {};
-    const proto = prototypeMap.get(inst.prototypeId);
-    if (!proto) return {};
+    const proto = inst.prototypeId ? prototypeMap.get(inst.prototypeId) : undefined;
     const instName = (inst.props?.name as string) || undefined;
-    const protoName = (proto.props.name as string) || undefined;
-    const heading = instName ?? protoName ?? proto.type;
+    const protoName = proto ? ((proto.props.name as string) || undefined) : undefined;
+    const type = getInstanceType(inst, proto);
+    const heading = instName ?? protoName ?? type ?? 'Unknown';
     const subheading = instName && protoName && instName !== protoName ? protoName : undefined;
     return { heading, subheading };
 }
@@ -56,19 +56,24 @@ export function getContextMenuItems(
     }
     if (instId) {
         const inst = deps.state.instances.get(instId);
-        const instProto = inst ? deps.prototypeMap.get(inst.prototypeId) : null;
-        const canFlip = !!(inst && instProto && resolveProps(instProto, inst).hasBack);
+        const instProto = inst?.prototypeId ? deps.prototypeMap.get(inst.prototypeId) : undefined;
+        const instType = inst ? getInstanceType(inst, instProto) : undefined;
+        const canFlip = !!(inst && (resolveProps(instProto, inst).hasBack || instType === 'deck' || instType === 'stack'));
         const items: ContextMenuItem[] = [
             { label: 'Edit', action: () => { deps.openInstEditor(instId); deps.setContextMenu(null); } },
-            {
+        ];
+        if (inst?.prototypeId) {
+            items.push({
                 label: 'Edit Prototype', action: () => {
                     const inst = deps.state.instances.get(instId);
-                    if (inst) deps.openProtoEditor(inst.prototypeId);
+                    if (inst?.prototypeId) deps.openProtoEditor(inst.prototypeId);
                     deps.setContextMenu(null);
                 }
-            },
+            });
+        }
+        items.push(
             { label: deps.isLocked(instId) ? 'Unlock' : 'Lock', action: () => deps.toggleLock(instId) },
-        ];
+        );
         if (canFlip) {
             items.push({
                 label: 'Flip', action: () => {
@@ -91,18 +96,25 @@ export function getContextMenuItems(
                 label: 'Make Prototype', action: () => {
                     const inst = deps.state.instances.get(instId);
                     if (!inst) return;
-                    const proto = deps.prototypeMap.get(inst.prototypeId);
-                    if (!proto) return;
+                    const proto = inst.prototypeId ? deps.prototypeMap.get(inst.prototypeId) : undefined;
+                    const type = getInstanceType(inst, proto);
+                    if (!type) return;
                     const newProtoId = crypto.randomUUID();
                     const merged = resolveProps(proto, inst);
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const { locked, ...protoProps } = merged as Record<string, unknown> & { locked?: unknown };
+                    const { locked, type: _type, cards, items, ...protoProps } = merged as Record<string, unknown> & { locked?: unknown; type?: unknown; cards?: unknown; items?: unknown };
+                    // Container contents go on both prototype (as defaults for new instances) and instance (as current state)
+                    if (cards) protoProps.cards = cards;
+                    if (items) protoProps.items = items;
+                    const instProps: Record<string, unknown> = {};
+                    if (cards) instProps.cards = cards;
+                    if (items) instProps.items = items;
                     deps.setState(prev => {
                         const next = new Map(prev.instances);
-                        next.set(instId, { ...inst, prototypeId: newProtoId, props: undefined });
+                        next.set(instId, { ...inst, prototypeId: newProtoId, props: Object.keys(instProps).length > 0 ? instProps : undefined });
                         return {
                             ...prev,
-                            prototypes: [...prev.prototypes, { id: newProtoId, type: proto.type, props: protoProps }],
+                            prototypes: [...prev.prototypes, { id: newProtoId, type: type as import('../../state_management/types').ObjectType, props: protoProps }],
                             instances: next,
                         };
                     });

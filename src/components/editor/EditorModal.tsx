@@ -161,6 +161,7 @@ export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSa
                         value={draft.name}
                         onChange={e => onDraftChange({ ...draft, name: e.currentTarget.value })}
                     />
+                    {effectiveType !== 'deck' && effectiveType !== 'stack' && (<>
                     <TextInput
                         label={`Text${ov(placeholders?.text)}`}
                         placeholder={placeholders?.text}
@@ -176,6 +177,8 @@ export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSa
                         value={draft.scale}
                         onChange={e => onDraftChange({ ...draft, scale: e.currentTarget.value })}
                     />
+                    </>)}
+                    {effectiveType !== 'deck' && effectiveType !== 'stack' && (<>
                     <TextInput
                         label={`Image Source${ov(placeholders?.imageSrc)}`}
                         placeholder={placeholders?.imageSrc}
@@ -223,6 +226,7 @@ export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSa
                             </Accordion.Panel>
                         </Accordion.Item>
                     </Accordion>
+                    </>)}
                     {(effectiveType === 'token' || effectiveType === 'card') && (
                         <>
                             <Checkbox

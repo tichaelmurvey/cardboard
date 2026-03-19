@@ -1,12 +1,16 @@
 import type Konva from 'konva';
-import type { CanvasState, Prototype } from './types';
-import { flattenPrototypes } from './prototypeUtils';
+import type { CanvasState, Instance, Prototype } from './types';
+import { getInstanceType } from './types';
 import { rectsOverlap50 } from '../utils/geometry';
 import { isLocked } from './instanceOps';
 import { removeFromSelection } from './instanceOps';
 
 type SetState = React.Dispatch<React.SetStateAction<CanvasState>>;
 type SetIds = React.Dispatch<React.SetStateAction<Set<string>>>;
+
+function instType(inst: Instance, prototypeMap: Map<string, Prototype>): string | undefined {
+    return getInstanceType(inst, inst.prototypeId ? prototypeMap.get(inst.prototypeId) : undefined);
+}
 
 export function findMergeTarget(
     draggedId: string,
@@ -19,8 +23,8 @@ export function findMergeTarget(
     const draggedInst = state.instances.get(draggedId);
     if (!draggedInst) return null;
     if (isLocked(state.instances, draggedId)) return null;
-    const draggedProto = prototypeMap.get(draggedInst.prototypeId);
-    if (!draggedProto || draggedProto.type === "board") return null;
+    const draggedType = instType(draggedInst, prototypeMap);
+    if (!draggedType || draggedType === "board") return null;
     const draggedNode = stageRef.current.findOne(`#${draggedId}`);
     if (!draggedNode) return null;
     const draggedRect = draggedNode.getClientRect();
@@ -31,31 +35,15 @@ export function findMergeTarget(
         const targetInst = state.instances.get(targetId);
         if (!targetInst) continue;
         if (isLocked(state.instances, targetId)) continue;
-        const targetProto = prototypeMap.get(targetInst.prototypeId);
-        if (!targetProto) continue;
-        if (draggedProto.type === "card" && targetProto.type !== "card" && targetProto.type !== "deck" && targetProto.type !== "stack") continue;
-        if (draggedProto.type === "deck" && targetProto.type !== "deck") continue;
-        if (draggedProto.type === "token" && targetProto.type !== "token" && targetProto.type !== "stack") continue;
-        if (draggedProto.type === "stack" && targetProto.type !== "stack") continue;
+        const targetType = instType(targetInst, prototypeMap);
+        if (!targetType) continue;
+        if (draggedType === "card" && targetType !== "card" && targetType !== "deck" && targetType !== "stack") continue;
+        if (draggedType === "deck" && targetType !== "deck") continue;
+        if (draggedType === "token" && targetType !== "token" && targetType !== "stack") continue;
+        if (draggedType === "stack" && targetType !== "stack") continue;
         if (rectsOverlap50(draggedRect, targetNode.getClientRect())) return targetId;
     }
     return null;
-}
-
-function getOrCreateContainerPrototype(
-    state: CanvasState,
-    setState: SetState,
-    type: "deck" | "stack",
-): string {
-    const existing = flattenPrototypes(state.prototypes).find(p => p.type === type);
-    if (existing) return existing.id;
-    const id = crypto.randomUUID();
-    const text = type === "deck" ? "Deck" : "Stack";
-    setState(prev => ({
-        ...prev,
-        prototypes: [...prev.prototypes, { id, type, props: { text } }],
-    }));
-    return id;
 }
 
 export function tryMerge(
@@ -71,12 +59,12 @@ export function tryMerge(
     if (!targetId) return;
 
     const draggedInst = state.instances.get(draggedId)!;
-    const draggedProto = prototypeMap.get(draggedInst.prototypeId)!;
     const targetInst = state.instances.get(targetId)!;
-    const targetProto = prototypeMap.get(targetInst.prototypeId)!;
+    const draggedType = instType(draggedInst, prototypeMap)!;
+    const targetType = instType(targetInst, prototypeMap)!;
 
     // Card → Deck
-    if (draggedProto.type === "card" && targetProto.type === "deck") {
+    if (draggedType === "card" && targetType === "deck") {
         const cardEntry = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
         setState(prev => {
             const next = new Map(prev.instances);
@@ -90,8 +78,7 @@ export function tryMerge(
     }
 
     // Card → Card = new Deck
-    if (draggedProto.type === "card" && targetProto.type === "card") {
-        const deckProtoId = getOrCreateContainerPrototype(state, setState, "deck");
+    if (draggedType === "card" && targetType === "card") {
         const bottomCard = { prototypeId: targetInst.prototypeId, props: targetInst.props };
         const topCard = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
         setState(prev => {
@@ -99,7 +86,7 @@ export function tryMerge(
             next.delete(draggedId);
             next.delete(targetId);
             const newId = crypto.randomUUID();
-            next.set(newId, { id: newId, prototypeId: deckProtoId, x: targetInst.x, y: targetInst.y, props: { cards: [bottomCard, topCard] } });
+            next.set(newId, { id: newId, x: targetInst.x, y: targetInst.y, props: { type: 'deck', cards: [bottomCard, topCard] } });
             return { ...prev, instances: next };
         });
         removeFromSelection(setSelectedIds, [draggedId, targetId]);
@@ -107,7 +94,7 @@ export function tryMerge(
     }
 
     // Deck → Deck
-    if (draggedProto.type === "deck" && targetProto.type === "deck") {
+    if (draggedType === "deck" && targetType === "deck") {
         const draggedCards = (draggedInst.props?.cards as unknown[]) ?? [];
         setState(prev => {
             const next = new Map(prev.instances);
@@ -121,7 +108,7 @@ export function tryMerge(
     }
 
     // Any non-container → Stack
-    if (draggedProto.type !== "deck" && draggedProto.type !== "stack" && targetProto.type === "stack") {
+    if (draggedType !== "deck" && draggedType !== "stack" && targetType === "stack") {
         const itemEntry = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
         setState(prev => {
             const next = new Map(prev.instances);
@@ -134,10 +121,9 @@ export function tryMerge(
         return;
     }
 
-    // Token → Token = new Stack
-    if (draggedProto.type !== "deck" && draggedProto.type !== "stack" && draggedProto.type !== "board"
-        && targetProto.type !== "deck" && targetProto.type !== "stack" && targetProto.type !== "board") {
-        const stackProtoId = getOrCreateContainerPrototype(state, setState, "stack");
+    // Non-container → Non-container = new Stack
+    if (draggedType !== "deck" && draggedType !== "stack" && draggedType !== "board"
+        && targetType !== "deck" && targetType !== "stack" && targetType !== "board") {
         const bottomItem = { prototypeId: targetInst.prototypeId, props: targetInst.props };
         const topItem = { prototypeId: draggedInst.prototypeId, props: draggedInst.props };
         setState(prev => {
@@ -145,7 +131,7 @@ export function tryMerge(
             next.delete(draggedId);
             next.delete(targetId);
             const newId = crypto.randomUUID();
-            next.set(newId, { id: newId, prototypeId: stackProtoId, x: targetInst.x, y: targetInst.y, props: { items: [bottomItem, topItem] } });
+            next.set(newId, { id: newId, x: targetInst.x, y: targetInst.y, props: { type: 'stack', items: [bottomItem, topItem] } });
             return { ...prev, instances: next };
         });
         removeFromSelection(setSelectedIds, [draggedId, targetId]);
@@ -153,7 +139,7 @@ export function tryMerge(
     }
 
     // Stack → Stack
-    if (draggedProto.type === "stack" && targetProto.type === "stack") {
+    if (draggedType === "stack" && targetType === "stack") {
         const draggedItems = (draggedInst.props?.items as unknown[]) ?? [];
         setState(prev => {
             const next = new Map(prev.instances);

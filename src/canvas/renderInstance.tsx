@@ -66,7 +66,7 @@ function resolveTopItem(entries: unknown[], prototypeMap: Map<string, Prototype>
 
 export function renderInstance(
     instance: Instance,
-    prototype: Prototype,
+    prototype: Prototype | undefined,
     onDragEnd: (id: string, x: number, y: number) => void,
     selected: boolean,
     hovered?: boolean,
@@ -77,7 +77,7 @@ export function renderInstance(
     const scale = (props.scale as number) ?? 1;
     const sizeX = props.sizeX as number | undefined;
     const sizeY = props.sizeY as number | undefined;
-    const effectiveType = (props.type as string) ?? prototype.type;
+    const effectiveType = (props.type as string) ?? prototype?.type;
 
     switch (effectiveType) {
         case "board":
