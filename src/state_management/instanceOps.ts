@@ -69,11 +69,11 @@ export function flipInstances(setState: SetState, prototypeMap: Map<string, Prot
             if (type === 'deck') {
                 const resolved = resolveProps(proto, inst);
                 const cards = (resolved.cards as unknown[]) ?? [];
-                next.set(id, { ...inst, props: { ...inst.props, cards: flipContainerEntries(cards, prototypeMap) } });
+                next.set(id, { ...inst, props: { ...inst.props, flipped: !inst.props?.flipped, cards: flipContainerEntries(cards, prototypeMap) } });
             } else if (type === 'stack') {
                 const resolved = resolveProps(proto, inst);
                 const items = (resolved.items as unknown[]) ?? [];
-                next.set(id, { ...inst, props: { ...inst.props, items: flipContainerEntries(items, prototypeMap) } });
+                next.set(id, { ...inst, props: { ...inst.props, flipped: !inst.props?.flipped, items: flipContainerEntries(items, prototypeMap) } });
             } else {
                 if (!resolveProps(proto, inst).hasBack) continue;
                 next.set(id, { ...inst, props: { ...inst.props, flipped: !inst.props?.flipped } });

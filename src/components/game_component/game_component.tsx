@@ -1,10 +1,13 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Group, Rect, Circle, Image, Text } from "react-konva";
 import { useHover } from "../../hooks/useHover";
 import { HOVER_STROKE, SELECTED_STROKE, TARGETED_STROKE, NO_STROKE } from "../../styles/style_consts";
 import useImage from "use-image";
 import type { GridCrop } from '../../canvas/gridCrop';
 import { useCropProps } from '../../canvas/gridCrop';
+import Konva from 'konva';
+
+const FLIP_DURATION = 0.15;
 
 interface GameComponentProps {
     id: string;
@@ -64,15 +67,70 @@ export function GameComponent({
 }: GameComponentProps) {
     const { hovered: internalHovered, hoverProps } = useHover();
     const hovered = hoveredOverride ?? internalHovered;
+    const groupRef = useRef<Konva.Group>(null);
+    const prevFlipped = useRef(flipped);
+    const [animFlipped, setAnimFlipped] = useState(flipped);
+    const [animating, setAnimating] = useState(false);
+    const tweenRef = useRef<Konva.Tween | null>(null);
 
-    const [frontImage] = useImage(imageSrc ?? "");
+    // Buffer visual props so container content doesn't update until the midpoint
+    const bufferedProps = useRef({ imageSrc, text, gridCrop, backGridCrop });
+    if (!animating) {
+        bufferedProps.current = { imageSrc, text, gridCrop, backGridCrop };
+    }
+
+    useEffect(() => {
+        if (prevFlipped.current === flipped) return;
+        prevFlipped.current = flipped;
+        const node = groupRef.current;
+        if (!node) { setAnimFlipped(flipped); return; }
+
+        tweenRef.current?.destroy();
+        setAnimating(true);
+
+        // Phase 1: squish to 0
+        const tween1 = new Konva.Tween({
+            node,
+            scaleX: 0,
+            duration: FLIP_DURATION,
+            easing: Konva.Easings.EaseIn,
+            onFinish: () => {
+                setAnimFlipped(flipped);
+                bufferedProps.current = { imageSrc, text, gridCrop, backGridCrop };
+                // Phase 2: expand back out
+                const tween2 = new Konva.Tween({
+                    node,
+                    scaleX: scaleX,
+                    duration: FLIP_DURATION,
+                    easing: Konva.Easings.EaseOut,
+                    onFinish: () => { tweenRef.current = null; setAnimating(false); },
+                });
+                tweenRef.current = tween2;
+                tween2.play();
+            },
+        });
+        tweenRef.current = tween1;
+        tween1.play();
+    }, [flipped, scaleX, imageSrc, text, gridCrop, backGridCrop]);
+
+    // Clean up tweens on unmount
+    useEffect(() => () => { tweenRef.current?.destroy(); }, []);
+
+    const visImageSrc = bufferedProps.current.imageSrc;
+    const visText = bufferedProps.current.text ?? "";
+    const visGridCrop = bufferedProps.current.gridCrop;
+    const visBackGridCrop = bufferedProps.current.backGridCrop;
+
+    const [frontImage] = useImage(visImageSrc ?? "");
     const [backImage] = useImage(backImageSrc ?? "");
-    const renderImage = flipped ? backImage : frontImage;
+    const hasBack = !!(backImageSrc || backText);
+    const showFlipped = hasBack && animFlipped;
+    const renderImage = showFlipped ? backImage : frontImage;
 
-    const activeCrop = flipped ? backGridCrop : gridCrop;
+    const activeCrop = showFlipped ? visBackGridCrop : visGridCrop;
     const cropProps = useCropProps(renderImage, activeCrop);
 
-    const displayText = flipped ? (backText ?? "") : text;
+    const displayText = showFlipped ? (backText ?? "") : visText;
 
     const strokeProps = targeted ? TARGETED_STROKE : selected ? SELECTED_STROKE : hovered ? HOVER_STROKE : NO_STROKE;
 
@@ -93,6 +151,7 @@ export function GameComponent({
 
     return (
         <Group
+            ref={groupRef}
             id={id}
             name={name}
             x={x}

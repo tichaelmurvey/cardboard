@@ -92,12 +92,12 @@ export function renderInstance(
         case "deck": {
             const cards = (props.cards as unknown[]) ?? [];
             const topVis = prototypeMap ? resolveTopItem(cards, prototypeMap) : {};
-            return <Deck key={instance.id} id={instance.id} x={instance.x} y={instance.y} cardCount={cards.length} imageSrc={topVis.imageSrc} text={topVis.text} gridCrop={topVis.gridCrop} topItemType={topVis.topItemType} topItemScale={topVis.topItemScale} topItemSizeX={topVis.topItemSizeX} topItemSizeY={topVis.topItemSizeY} scale={scale} sizeX={sizeX} sizeY={sizeY} onDragEnd={onDragEnd} selected={selected} hovered={hovered} targeted={targeted} />;
+            return <Deck key={instance.id} id={instance.id} x={instance.x} y={instance.y} cardCount={cards.length} flipped={props.flipped as boolean | undefined} imageSrc={topVis.imageSrc} text={topVis.text} gridCrop={topVis.gridCrop} topItemType={topVis.topItemType} topItemScale={topVis.topItemScale} topItemSizeX={topVis.topItemSizeX} topItemSizeY={topVis.topItemSizeY} scale={scale} sizeX={sizeX} sizeY={sizeY} onDragEnd={onDragEnd} selected={selected} hovered={hovered} targeted={targeted} />;
         }
         case "stack": {
             const items = (props.items as unknown[]) ?? [];
             const topVis = prototypeMap ? resolveTopItem(items, prototypeMap) : {};
-            return <Stack key={instance.id} id={instance.id} x={instance.x} y={instance.y} itemCount={items.length} imageSrc={topVis.imageSrc} text={topVis.text} gridCrop={topVis.gridCrop} topItemType={topVis.topItemType} topItemScale={topVis.topItemScale} topItemSizeX={topVis.topItemSizeX} topItemSizeY={topVis.topItemSizeY} scale={scale} sizeX={sizeX} sizeY={sizeY} onDragEnd={onDragEnd} selected={selected} hovered={hovered} targeted={targeted} />;
+            return <Stack key={instance.id} id={instance.id} x={instance.x} y={instance.y} itemCount={items.length} flipped={props.flipped as boolean | undefined} imageSrc={topVis.imageSrc} text={topVis.text} gridCrop={topVis.gridCrop} topItemType={topVis.topItemType} topItemScale={topVis.topItemScale} topItemSizeX={topVis.topItemSizeX} topItemSizeY={topVis.topItemSizeY} scale={scale} sizeX={sizeX} sizeY={sizeY} onDragEnd={onDragEnd} selected={selected} hovered={hovered} targeted={targeted} />;
         }
     }
 }

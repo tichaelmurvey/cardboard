@@ -15,6 +15,7 @@ interface StackProps {
     x: number;
     y: number;
     itemCount: number;
+    flipped?: boolean;
     imageSrc?: string;
     text?: string;
     gridCrop?: GridCrop;
@@ -31,7 +32,7 @@ interface StackProps {
     onDragEnd?: (id: string, x: number, y: number) => void;
 }
 
-export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, gridCrop, topItemType, topItemScale, topItemSizeX, topItemSizeY, selected, hovered, targeted, scale = 1, sizeX, sizeY, onDragEnd }: StackProps) {
+export const Stack = memo(function Stack({ id, x, y, itemCount, flipped, imageSrc, text, gridCrop, topItemType, topItemScale, topItemSizeX, topItemSizeY, selected, hovered, targeted, scale = 1, sizeX, sizeY, onDragEnd }: StackProps) {
     const [image] = useImage(imageSrc ?? "");
 
     const stackLines = Math.min(itemCount, MAX_STACK_LINES);
@@ -47,6 +48,7 @@ export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, 
         offsetX={w / 2} offsetY={h / 2}
         scaleX={scale} scaleY={scale}
         imageSrc={imageSrc}
+        flipped={flipped}
         gridCrop={gridCrop}
         text={text}
         selected={selected} hovered={hovered} targeted={targeted}
@@ -71,7 +73,7 @@ export const Stack = memo(function Stack({ id, x, y, itemCount, imageSrc, text, 
     </GameComponent>;
 }, (prev, next) =>
     prev.id === next.id && prev.x === next.x && prev.y === next.y &&
-    prev.itemCount === next.itemCount && prev.imageSrc === next.imageSrc &&
+    prev.itemCount === next.itemCount && prev.flipped === next.flipped && prev.imageSrc === next.imageSrc &&
     prev.text === next.text && prev.topItemType === next.topItemType &&
     prev.topItemScale === next.topItemScale &&
     prev.topItemSizeX === next.topItemSizeX && prev.topItemSizeY === next.topItemSizeY &&

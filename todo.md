@@ -4,14 +4,15 @@ NEXT
 tts board detection using size
 Default values for column grid/row on instance
 token stacks should show text of top member
-containers should be flippable
 make prototype edit modal draggable
 create new instance (without prototype) button
 sidebar menu to tabset controls
 display member list in container prototype
 prototype group > container instance
+shadow while dragging
 
 LATER
+player hands
 Delay tooltip popup
 Add ctrl z
 Check for any runtime stuff that can be moved to loadtime
