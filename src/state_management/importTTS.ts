@@ -1,4 +1,4 @@
-import type { CanvasState, Prototype, Instance, ObjectType } from './types';
+import type { CanvasState, Prototype, PrototypeGroup, PrototypeItem, Instance, ObjectType } from './types';
 import { instancesToMap } from './types';
 
 const POS_SCALE = 30;
@@ -76,6 +76,11 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
 
     const allPrototypes: Prototype[] = [];
     const allInstances: Instance[] = [];
+
+    // Track which group each prototype belongs to (protoId → groupKey)
+    const protoToGroup = new Map<string, string>();
+    // Group metadata (groupKey → display name)
+    const groupMeta = new Map<string, string>();
 
     // --- Categorise top-level objects ---
     const deckObjects = objects.filter(o => o.CustomDeck && o.ContainedObjects);
@@ -168,6 +173,14 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
             y: deckY,
             props: { cards: cardEntries },
         });
+
+        // Assign all card protos + deck proto to a group
+        const deckGroupKey = `deck-${deckObj.GUID ?? deckProtoId}`;
+        groupMeta.set(deckGroupKey, deckName);
+        for (const proto of cardProtoMap.values()) {
+            protoToGroup.set(proto.id, deckGroupKey);
+        }
+        protoToGroup.set(deckProtoId, deckGroupKey);
     }
 
     // --- Process stack containers (Bags etc. with CustomTile/CustomToken children) ---
@@ -254,6 +267,14 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
             y: containerY,
             props: { items: itemEntries },
         });
+
+        // Assign all token protos + stack proto to a group
+        const stackGroupKey = `stack-${containerObj.GUID ?? stackProtoId}`;
+        groupMeta.set(stackGroupKey, stackName);
+        for (const proto of tokenProtoMap.values()) {
+            protoToGroup.set(proto.id, stackGroupKey);
+        }
+        protoToGroup.set(stackProtoId, stackGroupKey);
     }
 
     // --- Process non-container objects (existing CustomImage logic) ---
@@ -352,6 +373,14 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
     }
 
     if (idRemap.size > 0) {
+        // Transfer group assignments from duplicate IDs to canonical IDs
+        for (const [oldId, canonicalId] of idRemap) {
+            if (!protoToGroup.has(canonicalId) && protoToGroup.has(oldId)) {
+                protoToGroup.set(canonicalId, protoToGroup.get(oldId)!);
+            }
+            protoToGroup.delete(oldId);
+        }
+
         for (const inst of allInstances) {
             inst.prototypeId = idRemap.get(inst.prototypeId) ?? inst.prototypeId;
             // Remap references inside container entries (deck cards / stack items)
@@ -370,9 +399,36 @@ export async function convertTTSSave(ttsJson: unknown): Promise<CanvasState> {
         }
     }
 
+    // --- Build grouped prototype structure ---
+    const groupContents = new Map<string, Prototype[]>();
+    const topLevel: PrototypeItem[] = [];
+
+    for (const proto of dedupedPrototypes) {
+        const groupKey = protoToGroup.get(proto.id);
+        if (groupKey) {
+            if (!groupContents.has(groupKey)) groupContents.set(groupKey, []);
+            groupContents.get(groupKey)!.push(proto);
+        } else {
+            topLevel.push(proto);
+        }
+    }
+
+    for (const [groupKey, contents] of groupContents) {
+        // Skip grouping when the container holds only one unique child prototype
+        // (contents = child protos + the container proto itself)
+        const childProtos = contents.filter(p => p.type !== 'deck' && p.type !== 'stack');
+        if (childProtos.length <= 1) {
+            topLevel.push(...contents);
+        } else {
+            const name = groupMeta.get(groupKey) ?? 'Group';
+            const group: PrototypeGroup = { id: crypto.randomUUID(), name, contents };
+            topLevel.push(group);
+        }
+    }
+
     return {
         version: 1,
-        prototypes: dedupedPrototypes,
+        prototypes: topLevel,
         instances: instancesToMap(allInstances),
         players: [],
         hiddenRegions: [],

@@ -1,4 +1,4 @@
-import { Modal, Stack, TextInput, Button, Checkbox, Select, Image as MantineImage, Accordion } from '@mantine/core';
+import { Modal, Stack, TextInput, Button, Checkbox, Select, Image as MantineImage, Accordion, Text as MantineText, Group as MantineGroup } from '@mantine/core';
 import type { ObjectType } from '../../state_management/types';
 import type { GridCrop } from '../../canvas/gridCrop';
 
@@ -6,8 +6,6 @@ const TYPE_OPTIONS: { value: ObjectType; label: string }[] = [
     { value: 'token', label: 'Token' },
     { value: 'card', label: 'Card' },
     { value: 'board', label: 'Board' },
-    { value: 'deck', label: 'Deck' },
-    { value: 'stack', label: 'Stack' },
 ];
 
 export interface EditorDraft {
@@ -27,7 +25,6 @@ export interface EditorDraft {
     backGridCol: string;
     backGridRow: string;
     flipped: boolean;
-    customSizing: boolean;
     sizeX: string;
     sizeY: string;
     type?: ObjectType;
@@ -39,7 +36,7 @@ export const EMPTY_DRAFT: EditorDraft = {
     hasBack: false, backImageSrc: '', backText: '',
     backGridNumWidth: '', backGridNumHeight: '', backGridCol: '', backGridRow: '',
     flipped: false,
-    customSizing: false, sizeX: '', sizeY: '',
+    sizeX: '', sizeY: '',
 };
 
 import { useState, useEffect } from 'react';
@@ -97,6 +94,12 @@ interface EditorModalProps {
     onEditPrototype?: () => void;
     /** Callback to reset instance props to prototype defaults. */
     onResetToPrototype?: () => void;
+    /** The name of the group this prototype belongs to (prototype editor only). */
+    groupName?: string;
+    /** All available groups for the move-to-group dropdown. */
+    allGroups?: { id: string; name: string; path: string[] }[];
+    /** Callback to move the prototype to a different group. */
+    onMoveToGroup?: (targetPath: string[]) => void;
 }
 
 function draftGridCrop(numW: string, numH: string, col: string, row: string): GridCrop | undefined {
@@ -108,7 +111,7 @@ function draftGridCrop(numW: string, numH: string, col: string, row: string): Gr
     return { gridNumWidth: nw, gridNumHeight: nh, gridCol: isNaN(c) ? 0 : c, gridRow: isNaN(r) ? 0 : r };
 }
 
-export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSave, placeholders, protoType, isInstance, onEditPrototype, onResetToPrototype }: EditorModalProps) {
+export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSave, placeholders, protoType, isInstance, onEditPrototype, onResetToPrototype, groupName, allGroups, onMoveToGroup }: EditorModalProps) {
     const ov = (field?: string) => placeholders && field ? ' (override)' : '';
     const effectiveType = draft.type ?? protoType;
     const frontCrop = draftGridCrop(draft.gridNumWidth, draft.gridNumHeight, draft.gridCol, draft.gridRow);
@@ -118,7 +121,7 @@ export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSa
         <Modal opened={opened} onClose={onClose} title={title} zIndex={3000}>
             {opened && (
                 <Stack>
-                    {draft.type && (
+                    {draft.type && draft.type !== 'deck' && draft.type !== 'stack' && (
                         <Select
                             label="Type"
                             data={TYPE_OPTIONS}
@@ -127,6 +130,30 @@ export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSa
                             allowDeselect={false}
                             comboboxProps={{ zIndex: 3100 }}
                         />
+                    )}
+                    {onMoveToGroup && allGroups && (
+                        <MantineGroup gap="xs" align="end">
+                            <MantineText size="sm" c="dimmed">Group: {groupName ?? '(top level)'}</MantineText>
+                            <Select
+                                size="xs"
+                                placeholder="Move to..."
+                                data={[
+                                    { value: '__top__', label: '(top level)' },
+                                    ...allGroups.map(g => ({ value: g.id, label: g.name })),
+                                ]}
+                                onChange={v => {
+                                    if (!v) return;
+                                    if (v === '__top__') onMoveToGroup([]);
+                                    else {
+                                        const group = allGroups.find(g => g.id === v);
+                                        if (group) onMoveToGroup(group.path);
+                                    }
+                                }}
+                                clearable
+                                comboboxProps={{ zIndex: 3100 }}
+                                style={{ flex: 1 }}
+                            />
+                        </MantineGroup>
                     )}
                     <TextInput
                         label={`Name${ov(placeholders?.name)}`}
@@ -171,15 +198,11 @@ export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSa
                             </Accordion.Panel>
                         </Accordion.Item>
                     </Accordion>
-                    {effectiveType === 'board' && (
-                        <>
-                            <Checkbox
-                                label="Custom sizing"
-                                checked={draft.customSizing}
-                                onChange={e => onDraftChange({ ...draft, customSizing: e.currentTarget.checked })}
-                            />
-                            {draft.customSizing && (
-                                <>
+                    <Accordion variant="contained">
+                        <Accordion.Item value="sizing">
+                            <Accordion.Control>Custom Size</Accordion.Control>
+                            <Accordion.Panel>
+                                <Stack>
                                     <TextInput
                                         label="Width"
                                         type="number"
@@ -196,10 +219,10 @@ export function EditorModal({ opened, onClose, title, draft, onDraftChange, onSa
                                         value={draft.sizeY}
                                         onChange={e => onDraftChange({ ...draft, sizeY: e.currentTarget.value })}
                                     />
-                                </>
-                            )}
-                        </>
-                    )}
+                                </Stack>
+                            </Accordion.Panel>
+                        </Accordion.Item>
+                    </Accordion>
                     {(effectiveType === 'token' || effectiveType === 'card') && (
                         <>
                             <Checkbox

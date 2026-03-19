@@ -1,16 +1,19 @@
 ONGOING
 
 NEXT
-Check for any runtime stuff that can be moved to loadtime
-Cache bounding rects at runtime
-make collision detection only happen on drag end, no other time.
-prototype folders
-Add grid image row/cell to editable properties
-prototype images
+tts board detection using size
+don't allow conversion from component to container in edit menu
+Update prototype creation menu fields to match edit menu
+Remove background for stacks / decks when there is an image
+Default values for column grid/row on instance
+token stacks should show text of top member
+containers should be flippable
+make prototype edit modal draggable
 
 LATER
 Delay tooltip popup
 Add ctrl z
+Check for any runtime stuff that can be moved to loadtime
 token shape property
 loading popup for imports
 highlight shape for tokens e.g. square tokens

@@ -80,6 +80,12 @@ export function GameComponent({
         onDragEnd?.(id, e.target.x(), e.target.y());
     }, [onDragEnd, id]);
 
+    const handleMouseDown = useCallback((e: import('konva/lib/Node').KonvaEventObject<MouseEvent>) => {
+        if ((e.evt as MouseEvent).button !== 0) {
+            e.target.stopDrag();
+        }
+    }, []);
+
     const Shape = circular ? Circle : Rect;
     const imageX = circular ? -width / 2 : undefined;
     const imageY = circular ? -height / 2 : undefined;
@@ -97,6 +103,7 @@ export function GameComponent({
             scaleY={scaleY}
             draggable
             {...hoverProps}
+            onMouseDown={handleMouseDown}
             onDragEnd={handleDragEnd}
         >
             {children}

@@ -18,7 +18,6 @@ export function draftFromProps(props: Record<string, unknown>, defaultScale: str
         backGridCol: props.backGridCol != null ? String(props.backGridCol) : '',
         backGridRow: props.backGridRow != null ? String(props.backGridRow) : '',
         flipped: !!(props.flipped),
-        customSizing: !!(props.customSizing),
         sizeX: props.sizeX != null ? String(props.sizeX) : '',
         sizeY: props.sizeY != null ? String(props.sizeY) : '',
     };
@@ -75,12 +74,9 @@ export function draftToUpdates(draft: EditorDraft, existingProps?: Record<string
         updates.backGridRow = undefined;
     }
     updates.flipped = draft.flipped;
-    updates.customSizing = draft.customSizing;
-    if (draft.customSizing) {
-        const x = parseFloat(draft.sizeX);
-        const y = parseFloat(draft.sizeY);
-        if (!isNaN(x) && x > 0) updates.sizeX = x;
-        if (!isNaN(y) && y > 0) updates.sizeY = y;
-    }
+    const sizeXVal = parseFloat(draft.sizeX);
+    const sizeYVal = parseFloat(draft.sizeY);
+    updates.sizeX = !isNaN(sizeXVal) && sizeXVal > 0 ? sizeXVal : undefined;
+    updates.sizeY = !isNaN(sizeYVal) && sizeYVal > 0 ? sizeYVal : undefined;
     return updates;
 }

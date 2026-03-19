@@ -1,18 +1,23 @@
-import { memo, useState, useEffect } from 'react';
-import { Drawer, Button, Stack, Divider, Text as MantineText, Badge, UnstyledButton, Group as MantineGroup, ActionIcon, SegmentedControl } from '@mantine/core';
-import type { Prototype, Player } from '../../state_management/types';
+import { memo, useState, useEffect, useCallback } from 'react';
+import { Drawer, Button, Stack, Divider, Text as MantineText, Badge, UnstyledButton, Group as MantineGroup, ActionIcon, SegmentedControl, TextInput, Breadcrumbs, Anchor } from '@mantine/core';
+import type { Prototype, Player, PrototypeItem, PrototypeGroup } from '../../state_management/types';
+import { isPrototypeGroup } from '../../state_management/types';
+import { getItemsAtPath } from '../../state_management/prototypeUtils';
 
 interface SidebarProps {
     opened: boolean;
     onClose: () => void;
-    prototypes: Prototype[];
+    prototypes: PrototypeItem[];
     players: Player[];
     onSave: () => void;
     onLoad: () => void;
     onSpawn: (prototypeId: string, e: React.MouseEvent) => void;
     onEditPrototype: (protoId: string) => void;
     onDeletePrototype: (protoId: string) => void;
-    onNewPrototype: () => void;
+    onNewPrototype: (path: string[]) => void;
+    onNewGroup: (path: string[]) => void;
+    onDeleteGroup: (id: string) => void;
+    onRenameGroup: (id: string, newName: string) => void;
     onAddPlayer: () => void;
     onDeletePlayer: (id: string) => void;
     onAddHiddenRegion: (playerId: string) => void;
@@ -24,7 +29,21 @@ interface SidebarProps {
     onEditModeChange: (editMode: boolean) => void;
 }
 
-export const Sidebar = memo(function Sidebar({ opened, onClose, prototypes, players, onSave, onLoad, onSpawn, onEditPrototype, onDeletePrototype, onNewPrototype, onAddPlayer, onDeletePlayer, onAddHiddenRegion, onLoadTTS, onImportTTS, isHost, hostPlayerId, editMode, onEditModeChange }: SidebarProps) {
+export const Sidebar = memo(function Sidebar({ opened, onClose, prototypes, players, onSave, onLoad, onSpawn, onEditPrototype, onDeletePrototype, onNewPrototype, onNewGroup, onDeleteGroup, onRenameGroup, onAddPlayer, onDeletePlayer, onAddHiddenRegion, onLoadTTS, onImportTTS, isHost, hostPlayerId, editMode, onEditModeChange }: SidebarProps) {
+    const [groupPath, setGroupPath] = useState<{ id: string; name: string }[]>([]);
+
+    const currentPath = groupPath.map(g => g.id);
+    const currentItems = getItemsAtPath(prototypes, currentPath);
+
+    const openGroup = useCallback((group: PrototypeGroup) => {
+        setGroupPath(prev => [...prev, { id: group.id, name: group.name }]);
+    }, []);
+
+    const navigateTo = useCallback((index: number) => {
+        // index -1 means root
+        setGroupPath(prev => prev.slice(0, index + 1));
+    }, []);
+
     return (
         <Drawer position='right' opened={opened} onClose={onClose} trapFocus={false} closeOnClickOutside={false} withOverlay={false}>
             {opened && (
@@ -46,10 +65,25 @@ export const Sidebar = memo(function Sidebar({ opened, onClose, prototypes, play
                             {editMode && (
                                 <>
                                     <Divider label="Prototypes" />
-                                    <Button variant="light" size="xs" onClick={onNewPrototype}>+ New Prototype</Button>
-                                    {prototypes.map(proto => (
-                                        <PrototypeEntry key={proto.id} proto={proto} onSpawn={onSpawn} onEdit={onEditPrototype} onDelete={onDeletePrototype} />
-                                    ))}
+                                    <Breadcrumbs>
+                                        <Anchor size="sm" onClick={() => navigateTo(-1)} style={{ cursor: 'pointer' }}>
+                                            Prototypes
+                                        </Anchor>
+                                        {groupPath.map((seg, i) => (
+                                            <Anchor key={seg.id} size="sm" onClick={() => navigateTo(i)} style={{ cursor: 'pointer' }}>
+                                                {seg.name}
+                                            </Anchor>
+                                        ))}
+                                    </Breadcrumbs>
+                                    <MantineGroup gap="xs">
+                                        <Button variant="light" size="xs" onClick={() => onNewPrototype(currentPath)} style={{ flex: 1 }}>+ Prototype</Button>
+                                        <Button variant="light" size="xs" onClick={() => onNewGroup(currentPath)} style={{ flex: 1 }}>+ Group</Button>
+                                    </MantineGroup>
+                                    {currentItems.map(item =>
+                                        isPrototypeGroup(item)
+                                            ? <GroupEntry key={item.id} group={item} onOpen={openGroup} onDelete={onDeleteGroup} onRename={onRenameGroup} />
+                                            : <PrototypeEntry key={item.id} proto={item} onSpawn={onSpawn} onEdit={onEditPrototype} onDelete={onDeletePrototype} />
+                                    )}
                                 </>
                             )}
                             <Divider label="Players" />
@@ -135,6 +169,56 @@ function PrototypeThumbnail({ proto }: { proto: Prototype }) {
         />
     );
 }
+
+const GroupEntry = memo(function GroupEntry({ group, onOpen, onDelete, onRename }: { group: PrototypeGroup; onOpen: (group: PrototypeGroup) => void; onDelete: (id: string) => void; onRename: (id: string, newName: string) => void }) {
+    const [editing, setEditing] = useState(false);
+    const [name, setName] = useState(group.name);
+
+    function handleRename() {
+        if (name.trim()) onRename(group.id, name.trim());
+        setEditing(false);
+    }
+
+    return (
+        <MantineGroup gap="xs" wrap="nowrap">
+            <UnstyledButton
+                onClick={() => onOpen(group)}
+                style={{
+                    flex: 1,
+                    padding: '8px',
+                    border: '1px solid var(--mantine-color-default-border)',
+                    borderRadius: 'var(--mantine-radius-sm)',
+                    cursor: 'pointer',
+                }}
+            >
+                <MantineGroup gap="xs" wrap="nowrap">
+                    <MantineText size="lg">📁</MantineText>
+                    {editing ? (
+                        <TextInput
+                            size="xs"
+                            value={name}
+                            onChange={e => setName(e.currentTarget.value)}
+                            onBlur={handleRename}
+                            onKeyDown={e => { if (e.key === 'Enter') handleRename(); }}
+                            onClick={e => e.stopPropagation()}
+                            autoFocus
+                            style={{ flex: 1 }}
+                        />
+                    ) : (
+                        <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                            <MantineText size="sm" fw={500}>{group.name}</MantineText>
+                            <Badge variant="light" size="xs">{group.contents.length} items</Badge>
+                        </Stack>
+                    )}
+                </MantineGroup>
+            </UnstyledButton>
+            <Button size="xs" variant="subtle" onClick={() => { setName(group.name); setEditing(true); }}>Rename</Button>
+            <ActionIcon variant="subtle" color="red" size="sm" onClick={() => onDelete(group.id)}>
+                ✕
+            </ActionIcon>
+        </MantineGroup>
+    );
+});
 
 const PrototypeEntry = memo(function PrototypeEntry({ proto, onSpawn, onEdit, onDelete }: { proto: Prototype; onSpawn: (id: string, e: React.MouseEvent) => void; onEdit: (id: string) => void; onDelete: (id: string) => void }) {
     return (

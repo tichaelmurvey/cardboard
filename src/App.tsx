@@ -7,8 +7,9 @@ import Konva from 'konva';
 import { DEFAULT_STATE } from './state_management/defaults';
 import { downloadJson, uploadJson } from './state_management/persistence';
 import { convertTTSSave } from './state_management/importTTS';
-import type { CanvasState, Instance, Prototype } from './state_management/types';
-import { resolveProps } from './state_management/types';
+import type { CanvasState, Instance, ObjectType, Prototype, PrototypeGroup } from './state_management/types';
+import { resolveProps, isPrototypeGroup } from './state_management/types';
+import { flattenPrototypes, insertAtPath, removeById, updatePrototypeById, updateGroupById, collectPrototypeIds, collectGroups, moveToGroup, findParentGroupId } from './state_management/prototypeUtils';
 import { rectsIntersect } from './utils/geometry';
 import type { Rect2D } from './utils/geometry';
 import { renderInstance, getZOrder, getGroupId } from './canvas/renderInstance';
@@ -21,7 +22,6 @@ import type { EditorDraft } from './components/editor/EditorModal';
 import { useMultiplayer } from './multiplayer/useMultiplayer';
 import { useRoom } from './multiplayer/useRoom';
 import { JoinModal } from './components/editor/JoinModal';
-import { NewProtoModal } from './components/editor/NewProtoModal';
 import { HiddenRegion } from './components/hidden-region/HiddenRegion';
 import { Tooltip } from './components/Tooltip';
 import useImage from 'use-image';
@@ -75,14 +75,15 @@ export default function App() {
     const [targetedId, setTargetedId] = useState<string | null>(null);
     const targetedIdRef = useRef<string | null>(null);
     const mergeCheckCounter = useRef(0);
-    const [newProtoOpen, setNewProtoOpen] = useState(false);
+    const [creatingProto, setCreatingProto] = useState(false);
+    const [newProtoPath, setNewProtoPath] = useState<string[]>([]);
     const [editMode, setEditMode] = useState(false);
 
     const [bgImage] = useImage(new URL('./assets/background.jpg', import.meta.url).href);
 
     const prototypeMap = useMemo(() => {
         const map = new Map<string, Prototype>();
-        for (const p of state.prototypes) map.set(p.id, p);
+        for (const p of flattenPrototypes(state.prototypes)) map.set(p.id, p);
         return map;
     }, [state.prototypes]);
 
@@ -284,7 +285,7 @@ export default function App() {
     });
 
     function handleDragStart(e: KonvaEventObject<DragEvent>) {
-        if (isPanning.current) { e.target.stopDrag(); return; }
+        if (isPanning.current || (e.evt && (e.evt as MouseEvent).button !== 0)) { e.target.stopDrag(); return; }
         const draggedId = e.target.id();
         if (isLocked(draggedId)) { e.target.stopDrag(); return; }
         e.target.opacity(0.7);
@@ -554,8 +555,8 @@ export default function App() {
         const newType = protoDraft.type ?? editingProto.type;
         setState(prev => ({
             ...prev,
-            prototypes: prev.prototypes.map(p =>
-                p.id === editingProto.id ? { ...p, type: newType, props: { ...p.props, ...updates } } : p
+            prototypes: updatePrototypeById(prev.prototypes, editingProto.id,
+                p => ({ ...p, type: newType, props: { ...p.props, ...updates } })
             ),
         }));
         setEditingProtoId(null);
@@ -569,7 +570,8 @@ export default function App() {
         const proto = prototypeMap.get(inst.prototypeId);
         setInstDraft(draftFromProps(inst.props ?? {}, ''));
         if (proto) {
-            setInstDraft(prev => ({ ...prev, hasBack: !!(proto.props.hasBack), type: proto.type }));
+            const instType = (inst.props?.type as ObjectType) ?? proto.type;
+            setInstDraft(prev => ({ ...prev, hasBack: !!(proto.props.hasBack), type: instType }));
         }
         setEditingInstId(instanceId);
     }
@@ -578,18 +580,16 @@ export default function App() {
         if (!editingInst) return;
         const proto = prototypeMap.get(editingInst.prototypeId);
         const updates = draftToUpdates(instDraft, proto?.props);
-        const newType = instDraft.type;
+        if (instDraft.type && instDraft.type !== proto?.type) {
+            updates.type = instDraft.type;
+        } else {
+            updates.type = undefined;
+        }
         setState(prev => {
             const next = new Map(prev.instances);
             const inst = next.get(editingInstId!);
             if (inst) next.set(editingInstId!, { ...inst, props: { ...inst.props, ...updates } });
-            return {
-                ...prev,
-                prototypes: newType && proto ? prev.prototypes.map(p =>
-                    p.id === proto.id ? { ...p, type: newType } : p
-                ) : prev.prototypes,
-                instances: next,
-            };
+            return { ...prev, instances: next };
         });
         setEditingInstId(null);
     }
@@ -619,14 +619,14 @@ export default function App() {
         });
     }, []);
 
-    function createPrototype(type: import('./state_management/types').ObjectType, text: string, scale: number, imageSrc: string) {
-        const props: Record<string, unknown> = { text };
-        if (scale !== 1) props.scale = scale;
-        if (imageSrc) props.src = imageSrc;
+    function createProtoFromDraft() {
+        const type = protoDraft.type ?? 'card';
+        const props = draftToUpdates(protoDraft);
         setState(prev => ({
             ...prev,
-            prototypes: [...prev.prototypes, { id: crypto.randomUUID(), type, props }],
+            prototypes: insertAtPath(prev.prototypes, newProtoPath, { id: crypto.randomUUID(), type, props }),
         }));
+        setCreatingProto(false);
     }
 
     const deletePrototype = useCallback((id: string) => {
@@ -635,8 +635,53 @@ export default function App() {
             for (const [instId, inst] of next) {
                 if (inst.prototypeId === id) next.delete(instId);
             }
-            return { ...prev, prototypes: prev.prototypes.filter(p => p.id !== id), instances: next };
+            return { ...prev, prototypes: removeById(prev.prototypes, id), instances: next };
         });
+    }, []);
+
+    const handleNewGroup = useCallback((path: string[]) => {
+        const group: PrototypeGroup = { id: crypto.randomUUID(), name: 'New Group', contents: [] };
+        setState(prev => ({
+            ...prev,
+            prototypes: insertAtPath(prev.prototypes, path, group),
+        }));
+    }, []);
+
+    const handleDeleteGroup = useCallback((id: string) => {
+        setState(prev => {
+            // Find the group and collect all prototype IDs inside it for cascade deletion
+            const findGroup = (items: import('./state_management/types').PrototypeItem[]): PrototypeGroup | null => {
+                for (const item of items) {
+                    if (item.id === id && isPrototypeGroup(item)) return item;
+                    if (isPrototypeGroup(item)) {
+                        const found = findGroup(item.contents);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            };
+            const group = findGroup(prev.prototypes);
+            const protoIds = group ? new Set(collectPrototypeIds(group.contents)) : new Set<string>();
+            const next = new Map(prev.instances);
+            for (const [instId, inst] of next) {
+                if (protoIds.has(inst.prototypeId)) next.delete(instId);
+            }
+            return { ...prev, prototypes: removeById(prev.prototypes, id), instances: next };
+        });
+    }, []);
+
+    const handleRenameGroup = useCallback((id: string, newName: string) => {
+        setState(prev => ({
+            ...prev,
+            prototypes: updateGroupById(prev.prototypes, id, g => ({ ...g, name: newName })),
+        }));
+    }, []);
+
+    const handleMovePrototype = useCallback((protoId: string, targetPath: string[]) => {
+        setState(prev => ({
+            ...prev,
+            prototypes: moveToGroup(prev.prototypes, protoId, targetPath),
+        }));
     }, []);
 
     const deletePlayer = useCallback((id: string) => {
@@ -726,7 +771,11 @@ export default function App() {
     // --- Persistence ---
 
     const handleSave = useCallback(() => downloadJson(stateRef.current.state), []);
-    const handleNewPrototype = useCallback(() => setNewProtoOpen(true), []);
+    const handleNewPrototype = useCallback((path: string[] = []) => {
+        setNewProtoPath(path);
+        setProtoDraft({ ...EMPTY_DRAFT, type: 'card' });
+        setCreatingProto(true);
+    }, []);
 
     const handleLoad = useCallback(async () => {
         try {
@@ -846,6 +895,9 @@ export default function App() {
                 onEditPrototype={openProtoEditor}
                 onDeletePrototype={deletePrototype}
                 onNewPrototype={handleNewPrototype}
+                onNewGroup={handleNewGroup}
+                onDeleteGroup={handleDeleteGroup}
+                onRenameGroup={handleRenameGroup}
                 onAddPlayer={addPlayer}
                 onDeletePlayer={deletePlayer}
                 onAddHiddenRegion={addHiddenRegion}
@@ -898,7 +950,7 @@ export default function App() {
                             const proto = prototypeMap.get(inst.prototypeId);
                             if (!proto) return null;
                             const locked = !!(inst.props?.locked);
-                            return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), undefined, targetedId === inst.id, prototypeMap);
+                            return renderInstance(inst, proto, updatePosition, locked ? false : selectedIds.has(inst.id), locked ? false : undefined, targetedId === inst.id, prototypeMap);
                         })}
                         {(state.hiddenRegions ?? []).map(region => {
                             const player = playerMap.get(region.playerId);
@@ -948,6 +1000,14 @@ export default function App() {
                 onDraftChange={setProtoDraft}
                 onSave={saveProtoEdits}
                 protoType={editingProto.type}
+                groupName={(() => {
+                    const pid = findParentGroupId(state.prototypes, editingProto.id);
+                    if (!pid) return undefined;
+                    const groups = collectGroups(state.prototypes);
+                    return groups.find(g => g.id === pid)?.name;
+                })()}
+                allGroups={collectGroups(state.prototypes)}
+                onMoveToGroup={(targetPath) => handleMovePrototype(editingProto.id, targetPath)}
             />}
             {editingInst && <EditorModal
                 opened
@@ -975,7 +1035,15 @@ export default function App() {
                 }}
             />}
             <JoinModal opened={!assignedPlayerId} onJoin={claimPlayer} />
-            {newProtoOpen && <NewProtoModal opened onClose={() => setNewProtoOpen(false)} onCreate={createPrototype} />}
+            {creatingProto && <EditorModal
+                opened
+                onClose={() => setCreatingProto(false)}
+                title="New Prototype"
+                draft={protoDraft}
+                onDraftChange={setProtoDraft}
+                onSave={createProtoFromDraft}
+                protoType={protoDraft.type}
+            />}
         </>
     );
 }

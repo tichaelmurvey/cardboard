@@ -1,6 +1,8 @@
 import type Konva from 'konva';
 import type { CanvasState, Prototype } from './types';
+import { flattenPrototypes } from './prototypeUtils';
 import { rectsOverlap50 } from '../utils/geometry';
+import { isLocked } from './instanceOps';
 import { removeFromSelection } from './instanceOps';
 
 type SetState = React.Dispatch<React.SetStateAction<CanvasState>>;
@@ -16,6 +18,7 @@ export function findMergeTarget(
     if (!layerRef.current || !stageRef.current) return null;
     const draggedInst = state.instances.get(draggedId);
     if (!draggedInst) return null;
+    if (isLocked(state.instances, draggedId)) return null;
     const draggedProto = prototypeMap.get(draggedInst.prototypeId);
     if (!draggedProto || draggedProto.type === "board") return null;
     const draggedNode = stageRef.current.findOne(`#${draggedId}`);
@@ -27,6 +30,7 @@ export function findMergeTarget(
         if (!targetId || targetId === draggedId) continue;
         const targetInst = state.instances.get(targetId);
         if (!targetInst) continue;
+        if (isLocked(state.instances, targetId)) continue;
         const targetProto = prototypeMap.get(targetInst.prototypeId);
         if (!targetProto) continue;
         if (draggedProto.type === "card" && targetProto.type !== "card" && targetProto.type !== "deck" && targetProto.type !== "stack") continue;
@@ -43,7 +47,7 @@ function getOrCreateContainerPrototype(
     setState: SetState,
     type: "deck" | "stack",
 ): string {
-    const existing = state.prototypes.find(p => p.type === type);
+    const existing = flattenPrototypes(state.prototypes).find(p => p.type === type);
     if (existing) return existing.id;
     const id = crypto.randomUUID();
     const text = type === "deck" ? "Deck" : "Stack";

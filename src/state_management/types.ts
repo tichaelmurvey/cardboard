@@ -8,6 +8,18 @@ export interface Prototype {
     props: Record<string, unknown>;
 }
 
+export interface PrototypeGroup {
+    id: ObjectId;
+    name: string;
+    contents: PrototypeItem[];
+}
+
+export type PrototypeItem = Prototype | PrototypeGroup;
+
+export function isPrototypeGroup(item: PrototypeItem): item is PrototypeGroup {
+    return 'contents' in item;
+}
+
 export interface Instance {
     id: ObjectId;
     prototypeId: ObjectId;
@@ -34,7 +46,7 @@ export interface HiddenRegion {
 
 export interface CanvasState {
     version: 1;
-    prototypes: Prototype[];
+    prototypes: PrototypeItem[];
     instances: Map<string, Instance>;
     players: Player[];
     hiddenRegions: HiddenRegion[];
